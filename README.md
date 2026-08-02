@@ -14,13 +14,13 @@ A task management application built to manage your task to be super productive, 
 
 ## Tech Stack
 
-- **Framework:** React 19 + TypeScript
-- **Build tool:** Vite
-- **Routing:** React Router
-- **Styling:** <!-- TODO: Tailwind CSS / CSS Modules — work in progress -->
-- **Data fetching:** <!-- TODO: fill in once Phase 3 is implemented (e.g. Apollo Client / urql / TanStack Query + GraphQL) -->
-- **Linting/Formatting:** ESLint (flat config, typescript-eslint) + Prettier
-- **CI:** GitHub Actions (lint, typecheck, build on every PR)
+* **Framework:** React 19 + TypeScript
+* **Build tool:** Vite
+* **Routing:** React Router
+* **Styling:** <!-- TODO: Tailwind CSS / CSS Modules — work in progress -->
+* **Data fetching:** <!-- TODO: fill in once Phase 3 is implemented (e.g. Apollo Client / urql / TanStack Query + GraphQL) -->
+* **Linting/Formatting:** ESLint (flat config, typescript-eslint) + Prettier
+* **CI:** GitHub Actions (lint, typecheck, build on every PR)
 
 ## Setup & Running Locally
 
@@ -79,14 +79,14 @@ src/
 
 <!-- TODO: I must keep this checklist updated as I complete each phase — makes review much easier -->
 
-- [ ] Initial setup (folder structure, routing, styles, linting, error boundary, CI)
-- [ ] Dashboard UI (static)
-- [ ] API connection — fetch tasks, loading/error/empty states
-- [ ] Create task
-- [ ] Update task
-- [ ] Delete task
-- [ ] Search & filter
-- [ ] User settings page
+* [ ] Initial setup (folder structure, routing, styles, linting, error boundary, CI)
+* [ ] Dashboard UI (static)
+* [ ] API connection — fetch tasks, loading/error/empty states
+* [ ] Create task
+* [ ] Update task
+* [ ] Delete task
+* [ ] Search & filter
+* [ ] User settings page
 
 ### Bonus points attempted
 
