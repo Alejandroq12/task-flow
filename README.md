@@ -1,97 +1,75 @@
-# Task Flow — Task Management App
+# React + TypeScript + Vite
 
-A task management application built to manage your task to be super productive, connecting to a GraphQL API to browse, create, update, and organize tasks across a kanban-style dashboard.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Live Demo
+Currently, two official plugins are available:
 
-<!-- TODO: add once deployed (Vercel/Netlify) -->
-[Live app](#) · [Video walkthrough / GIF](#)
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
-## Screenshots
+## React Compiler
 
-<!-- TODO: add screenshots or GIFs of the working app once Phase 2/3 are done -->
-<!-- Tip: record a short GIF of drag-and-drop and the create/edit flow, that sells the project fastest -->
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Tech Stack
+## Expanding the ESLint configuration
 
-- **Framework:** React 19 + TypeScript
-- **Build tool:** Vite
-- **Routing:** React Router
-- **Styling:** <!-- TODO: Tailwind CSS / CSS Modules — work in progress -->
-- **Data fetching:** <!-- TODO: fill in once Phase 3 is implemented (e.g. Apollo Client / urql / TanStack Query + GraphQL) -->
-- **Linting/Formatting:** ESLint (flat config, typescript-eslint) + Prettier
-- **CI:** GitHub Actions (lint, typecheck, build on every PR)
+If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
 
-## Setup & Running Locally
+```js
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
 
-```bash
-git clone <my-repo-url>
-cd task-flow
-npm install
-npm run dev
-```
+      // Remove tseslint.configs.recommended and replace with this
+      tseslint.configs.recommendedTypeChecked,
+      // Alternatively, use this for stricter rules
+      tseslint.configs.strictTypeChecked,
+      // Optionally, add this for stylistic rules
+      tseslint.configs.stylisticTypeChecked,
 
-The app runs at `http://localhost:5173`.
-
-### Environment variables
-
-<!-- TODO: add a .env for the API URL, document it here: -->
-<!-- VITE_API_URL.... -->
-
-### Available scripts
-
-```bash
-npm run dev         # start dev server
-npm run build        # production build
-npm run lint          # run ESLint
-npm run typecheck   # run tsc --noEmit
-npm run preview      # preview production build locally
-```
-
-## Project Structure
+      // Other configs...
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
 
 ```
-src/
-  app/          # App shell: router, providers, layout
-  features/     # Feature-based modules (tasks, settings)
-  components/   # Shared, reusable UI components
-  lib/          # API client / GraphQL setup
-  types/        # Shared TypeScript types
+
+You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+
+```js
+// eslint.config.js
+import reactX from 'eslint-plugin-react-x'
+import reactDom from 'eslint-plugin-react-dom'
+
+export default defineConfig([
+  globalIgnores(['dist']),
+  {
+    files: ['**/*.{ts,tsx}'],
+    extends: [
+      // Other configs...
+      // Enable lint rules for React
+      reactX.configs['recommended-typescript'],
+      // Enable lint rules for React DOM
+      reactDom.configs.recommended,
+    ],
+    languageOptions: {
+      parserOptions: {
+        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        tsconfigRootDir: import.meta.dirname,
+      },
+      // other options...
+    },
+  },
+])
+
 ```
-
-## Rationale & Decisions
-
-<!-- TODO: this section matters as much as the code — I will fill it in as I go, not all at the end -->
-
-**Why this folder structure?**
-<!-- e.g. feature-based over type-based because... -->
-
-**Why this styling solution?**
-<!-- e.g. Tailwind for fast iteration against the Figma design tokens -->
-
-**Why this data-fetching approach?**
-<!-- I must fill in once Phase 3 is done — what I chose and the tradeoff against alternatives -->
-
-**What I'd do differently with more time:**
-<!-- honest reflection — this is a strong signal in review, not a weakness to hide -->
-
-## What's Implemented
-
-<!-- TODO: I must keep this checklist updated as I complete each phase — makes review much easier -->
-
-- [ ] Initial setup (folder structure, routing, styles, linting, error boundary, CI)
-- [ ] Dashboard UI (static)
-- [ ] API connection — fetch tasks, loading/error/empty states
-- [ ] Create task
-- [ ] Update task
-- [ ] Delete task
-- [ ] Search & filter
-- [ ] User settings page
-
-### Bonus points attempted
-
-<!-- TODO: list which bonus features I tackled, if any -->
-
-## Additional Notes
-
-<!-- TODO: anything else worth mentioning — known limitations, things I'd want feedback on, etc. -->
