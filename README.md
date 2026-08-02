@@ -2,17 +2,17 @@
 
 A task management application built to manage your task to be super productive, connecting to a GraphQL API to browse, create, update, and organize tasks across a kanban-style dashboard.
 
-## 🚀 Live Demo
+## Live Demo
 
 <!-- TODO: add once deployed (Vercel/Netlify) -->
 [Live app](#) · [Video walkthrough / GIF](#)
 
-## 📸 Screenshots
+## Screenshots
 
 <!-- TODO: add screenshots or GIFs of the working app once Phase 2/3 are done -->
 <!-- Tip: record a short GIF of drag-and-drop and the create/edit flow, that sells the project fastest -->
 
-## 🛠 Tech Stack
+## Tech Stack
 
 - **Framework:** React 19 + TypeScript
 - **Build tool:** Vite
@@ -22,7 +22,7 @@ A task management application built to manage your task to be super productive, 
 - **Linting/Formatting:** ESLint (flat config, typescript-eslint) + Prettier
 - **CI:** GitHub Actions (lint, typecheck, build on every PR)
 
-## 📋 Setup & Running Locally
+## Setup & Running Locally
 
 ```bash
 git clone <my-repo-url>
