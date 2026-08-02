@@ -6,7 +6,6 @@ on:
   push:
     branches: [main, dev]
 
-# One run per branch. A new push supersedes an in-flight run for the same ref.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -36,8 +35,6 @@ jobs:
       - name: Lint
         run: npm run lint
 
-      # `tsc -b` is required: the root tsconfig.json has "files": [], so plain
-      # `tsc --noEmit` would check zero files and pass unconditionally.
       - name: Typecheck
         run: npm run typecheck
 
