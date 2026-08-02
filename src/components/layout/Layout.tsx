@@ -1,3 +1,13 @@
+import { Outlet } from 'react-router';
+
 export function Layout() {
-  return <div>Hello</div>
+  return (
+    <div>
+      <header>Hello</header>
+
+      <main>
+        <Outlet />
+      </main>
+    </div>
+  );
 }
