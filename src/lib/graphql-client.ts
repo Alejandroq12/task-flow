@@ -1,19 +1,9 @@
 import { GraphQLClient } from 'graphql-request'
 
-const url = import.meta.env.VITE_API_URL
-const token = import.meta.env.VITE_API_TOKEN
-
-if (!url || !token) {
-  throw new Error(
-    'Missing VITE_API_URL / VITE_API_TOKEN — copy .env.example to .env.local and add your token (see README).',
-  )
-}
-
 // Transport layer: every query/mutation goes through this client.
+// It calls the relative /graphql path; the dev server's proxy (vite.config.ts)
+// forwards the request to the real API and attaches the Authorization header
+// in Node, and the token never enters the browser bundle.
 // Typed documents from `npm run codegen` (TypedDocumentNode) infer both the
 // response and variable types when passed to graphqlClient.request().
-export const graphqlClient = new GraphQLClient(url, {
-  headers: {
-    Authorization: `Bearer ${token}`,
-  },
-})
+export const graphqlClient = new GraphQLClient('/graphql')

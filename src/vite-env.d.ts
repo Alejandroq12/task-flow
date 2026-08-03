@@ -4,11 +4,6 @@ interface ViteTypeOptions {
   strictImportMetaEnv: unknown
 }
 
-interface ImportMetaEnv {
-  readonly VITE_API_URL: string
-  readonly VITE_API_TOKEN: string
-}
-
-interface ImportMeta {
-  readonly env: ImportMetaEnv
-}
+// No VITE_-prefixed variables exist by design: the API token stays server-side
+// (dev-server proxy in vite.config.ts, codegen.ts) and must never be inlined
+// into the browser bundle.

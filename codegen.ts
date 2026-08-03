@@ -3,16 +3,16 @@ import type { CodegenConfig } from '@graphql-codegen/cli'
 
 loadEnv({ path: ['.env.local', '.env'] })
 
-if (!process.env.VITE_API_URL || !process.env.VITE_API_TOKEN) {
-  throw new Error('Set VITE_API_URL and VITE_API_TOKEN in .env.local (see .env.example)')
+if (!process.env.API_URL || !process.env.API_TOKEN) {
+  throw new Error('Set API_URL and API_TOKEN in .env.local (see .env.example)')
 }
 
 // Run with: npm run codegen
 const config: CodegenConfig = {
   schema: {
-    [process.env.VITE_API_URL ?? '']: {
+    [process.env.API_URL]: {
       headers: {
-        Authorization: `Bearer ${process.env.VITE_API_TOKEN ?? ''}`,
+        Authorization: `Bearer ${process.env.API_TOKEN}`,
       },
     },
   },

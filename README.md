@@ -32,7 +32,7 @@ Requires Node 24 (see `.nvmrc`).
 git clone https://github.com/Alejandroq12/task-flow.git
 cd task-flow
 npm install
-cp .env.example .env.local   # then fill in your access token and url(send me a message to provide it to you).
+cp .env.example .env.local   # then add the project access token
 npm run dev
 ```
 
@@ -40,12 +40,14 @@ The app runs at `http://localhost:5173`.
 
 ### Environment variables
 
-| Variable         | Description                                        |
-| ---------------- | -------------------------------------------------- |
-| `VITE_API_URL`   | GraphQL endpoint                                   |
-| `VITE_API_TOKEN` | Personal access token (sent as Bearer auth header) |
+| Variable    | Description                                             |
+| ----------- | ------------------------------------------------------- |
+| `API_URL`   | GraphQL endpoint of the project API                   |
+| `API_TOKEN` | Personal access token (attached server-side, see below) |
 
 Real values live in `.env.local`, which is gitignored — never commit tokens. Both variables are also required by `npm run codegen`.
+
+> **Security note:** the token is deliberately **not** `VITE_`-prefixed, Vite inlines `VITE_*` variables into the public JS bundle, where anyone could extract them. Instead, the app calls the relative path `/graphql` and the dev server proxies it to the real API, attaching the `Authorization` header in Node (see `vite.config.ts`). The token never reaches the browser. A deployed build would need the same proxy as a serverless function, the static bundle alone cannot (and must not) carry the token.
 
 ### Available scripts
 
