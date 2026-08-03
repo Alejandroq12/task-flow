@@ -42,7 +42,7 @@ The app runs at `http://localhost:5173`.
 
 | Variable         | Description                                        |
 | ---------------- | -------------------------------------------------- |
-| `VITE_API_URL`   | GraphQL endpoint             |
+| `VITE_API_URL`   | GraphQL endpoint                                   |
 | `VITE_API_TOKEN` | Personal access token (sent as Bearer auth header) |
 
 Real values live in `.env.local`, which is gitignored — never commit tokens. Both variables are also required by `npm run codegen`.
