@@ -1,10 +1,11 @@
 # Task Flow — Task Management App
 
-A task management application built to manage your task to be super productive, connecting to a GraphQL API to browse, create, update, and organize tasks across a kanban-style dashboard.
+A task management application built to manage your tasks and be super productive, connecting to a GraphQL API to browse, create, update, and organize tasks across a kanban-style dashboard.
 
 ## Live Demo
 
 <!-- TODO: add once deployed (Vercel/Netlify) -->
+
 [Live app](#) · [Video walkthrough / GIF](#)
 
 ## Screenshots
@@ -14,20 +15,24 @@ A task management application built to manage your task to be super productive, 
 
 ## Tech Stack
 
-* **Framework:** React 19 + TypeScript
-* **Build tool:** Vite
-* **Routing:** React Router
-* **Styling:** <!-- TODO: Tailwind CSS / CSS Modules — work in progress -->
-* **Data fetching:** <!-- TODO: fill in once Phase 3 is implemented (e.g. Apollo Client / urql / TanStack Query + GraphQL) -->
-* **Linting/Formatting:** ESLint (flat config, typescript-eslint) + Prettier
-* **CI:** GitHub Actions (lint, typecheck, build on every PR)
+- **Framework:** React 19 + TypeScript (strict)
+- **Build tool:** Vite
+- **Routing:** React Router (`createBrowserRouter`)
+- **Styling:** Tailwind CSS v4 with design tokens mirroring the Figma design system
+- **Data:** TanStack Query + graphql-request, with GraphQL Code Generator for end-to-end typed operations
+- **Testing:** Vitest + React Testing Library
+- **Linting/Formatting:** ESLint (flat config, typescript-eslint type-checked) + Prettier
+- **CI:** GitHub Actions — format check, lint, typecheck, tests, and build on every PR
 
 ## Setup & Running Locally
 
+Requires Node 24 (see `.nvmrc`).
+
 ```bash
-git clone <my-repo-url>
+git clone https://github.com/Alejandroq12/task-flow.git
 cd task-flow
 npm install
+cp .env.example .env.local   # then fill in your access token and url(send me a message to provide it to you).
 npm run dev
 ```
 
@@ -35,28 +40,43 @@ The app runs at `http://localhost:5173`.
 
 ### Environment variables
 
-<!-- TODO: add a .env for the API URL, document it here: -->
-<!-- VITE_API_URL.... -->
+| Variable         | Description                                        |
+| ---------------- | -------------------------------------------------- |
+| `VITE_API_URL`   | GraphQL endpoint             |
+| `VITE_API_TOKEN` | Personal access token (sent as Bearer auth header) |
+
+Real values live in `.env.local`, which is gitignored — never commit tokens. Both variables are also required by `npm run codegen`.
 
 ### Available scripts
 
 ```bash
-npm run dev         # start dev server
-npm run build        # production build
+npm run dev           # start dev server
+npm run build         # typecheck + production build
 npm run lint          # run ESLint
-npm run typecheck   # run tsc --noEmit
-npm run preview      # preview production build locally
+npm run typecheck     # run tsc -b (project references)
+npm test              # run unit tests once (vitest)
+npm run test:watch    # run tests in watch mode
+npm run format        # format with Prettier
+npm run format:check  # verify formatting (used in CI)
+npm run codegen       # generate typed GraphQL operations from the API schema
+npm run preview       # preview production build locally
 ```
 
 ## Project Structure
 
 ```
 src/
-  app/          # App shell: router, providers, layout
-  features/     # Feature-based modules (tasks, settings)
-  components/   # Shared, reusable UI components
-  lib/          # API client / GraphQL setup
-  types/        # Shared TypeScript types
+  app/          # App shell: router, route-level pages (NotFound, RouteError) + tests
+  components/
+    layout/     # Structural components (Layout with sidebar/header slots)
+    ui/         # Shared, reusable UI components (used by 2+ features)
+  features/     # Feature modules — components/hooks/types owned by one feature
+    tasks/      #   dashboard, task cards, task mutations
+    settings/   #   user profile page
+  graphql/
+    generated/  # created by `npm run codegen` (do not edit by hand)
+  lib/          # cross-cutting setup (GraphQL client, TanStack QueryClient)
+  test/         # test setup (jest-dom matchers)
 ```
 
 ## Rationale & Decisions
@@ -64,29 +84,30 @@ src/
 <!-- TODO: this section matters as much as the code — I will fill it in as I go, not all at the end -->
 
 **Why this folder structure?**
-<!-- e.g. feature-based over type-based because... -->
+
+<!-- Feature-based over type-based because... -->
 
 **Why this styling solution?**
-<!-- e.g. Tailwind for fast iteration against the Figma design tokens -->
+
+<!-- Tailwind v4 with @theme tokens named after the Figma color styles because... -->
 
 **Why this data-fetching approach?**
-<!-- I must fill in once Phase 3 is done — what I chose and the tradeoff against alternatives -->
+
+<!-- TanStack Query + graphql-request + codegen: what I chose and the tradeoff against alternatives (Apollo, urql) -->
 
 **What I'd do differently with more time:**
 <!-- honest reflection — this is a strong signal in review, not a weakness to hide -->
 
 ## What's Implemented
 
-<!-- TODO: I must keep this checklist updated as I complete each phase — makes review much easier -->
-
-* [ ] Initial setup (folder structure, routing, styles, linting, error boundary, CI)
-* [ ] Dashboard UI (static)
-* [ ] API connection — fetch tasks, loading/error/empty states
-* [ ] Create task
-* [ ] Update task
-* [ ] Delete task
-* [ ] Search & filter
-* [ ] User settings page
+- [x] Initial setup (folder structure, routing, styles solution, linting/formatting, error boundary, tests, CI)
+- [ ] Dashboard UI (static)
+- [ ] API connection — fetch tasks, loading/error/empty states
+- [ ] Create task
+- [ ] Update task
+- [ ] Delete task
+- [ ] Search & filter
+- [ ] User settings page
 
 ### Bonus points attempted
 
