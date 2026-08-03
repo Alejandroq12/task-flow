@@ -1,23 +1,22 @@
-import { createBrowserRouter } from 'react-router'
-import { Layout } from '../components/layout/Layout'
-import { Dashboard } from '../features/tasks/Dashboard'
-import { Settings } from '../features/settings/Settings'
-import { NotFound } from '../components/ui/NotFound'
-import { RouteError } from '../components/ui/RouteError'
-import { ErrorBoundary } from '../components/ui/ErrorBoundary'
+import { createBrowserRouter, type RouteObject } from 'react-router'
+import { Layout } from '@/components/layout/Layout'
+import { Dashboard } from '@/features/tasks/Dashboard'
+import { Settings } from '@/features/settings/Settings'
+import { NotFound } from '@/app/NotFound'
+import { RouteError } from '@/app/RouteError'
 
-export const router = createBrowserRouter([
+// Exported separately so tests can mount the same tree with createMemoryRouter.
+export const routes: RouteObject[] = [
   {
     path: '/',
-    element: (
-      <ErrorBoundary>
-        <Layout />
-      </ErrorBoundary>
-    ),    errorElement: <RouteError />,
+    element: <Layout />,
+    errorElement: <RouteError />,
     children: [
       { index: true, element: <Dashboard /> },
       { path: 'settings', element: <Settings /> },
       { path: '*', element: <NotFound /> },
     ],
   },
-])
+]
+
+export const router = createBrowserRouter(routes)
