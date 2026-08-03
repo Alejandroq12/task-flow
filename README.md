@@ -1,6 +1,6 @@
 # Task Flow — Task Management App
 
-A task management application built to manage your tasks and be super productive, connecting to a GraphQL API to browse, create, update, and organize tasks across a kanban-style dashboard.
+A task management application that I am buiding to manage your tasks and be super productive, connecting to a GraphQL API to browse, create, update, and organize tasks across a kanban-style dashboard.
 
 ## Live Demo
 
