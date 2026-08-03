@@ -1,4 +1,5 @@
 {
+  "vscode-edge-devtools.webhint": false,
   "typescript.tsdk": "node_modules/typescript/lib",
   "css.lint.unknownAtRules": "ignore",
   "editor.defaultFormatter": "esbenp.prettier-vscode",
