@@ -6,7 +6,7 @@ A task management application that I am building to manage your tasks and be sup
 
 <!-- TODO: add once deployed (Vercel/Netlify) -->
 
-[Live app](#) · [Video walkthrough / GIF](#)
+_Live app and video walkthrough coming soon._
 
 ## Screenshots
 
