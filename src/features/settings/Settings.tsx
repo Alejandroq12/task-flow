@@ -1,3 +1,3 @@
 export function Settings() {
-  return <div>Settings</div>
+  return <h1>Settings</h1>
 }
