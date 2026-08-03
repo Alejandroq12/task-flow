@@ -42,7 +42,7 @@ The app runs at `http://localhost:5173`.
 
 | Variable    | Description                                             |
 | ----------- | ------------------------------------------------------- |
-| `API_URL`   | GraphQL endpoint of the project API                   |
+| `API_URL`   | GraphQL endpoint of the project API                     |
 | `API_TOKEN` | Personal access token (attached server-side, see below) |
 
 Real values live in `.env.local`, which is gitignored — never commit tokens. Both variables are also required by `npm run codegen`.
