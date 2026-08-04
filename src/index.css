@@ -1,48 +1,310 @@
 @import 'tailwindcss';
 
 /*
- * Design tokens to mirror the "Design System" page of the Figma.
- * TODO(figma): verify every hex value against the Figma color styles before
- * building UI. Names follow the Figma groups so a token in code is findable
- * in the design file (and vice versa).
+ * Design tokens
+ * Sources:
+ *   [P] Project file  "Task Management Challenge" › UI Guidelines — WINS conflicts
+ *   [S] Style guide   "CSS Design Challenge 2.0" › Style Guide — loses conflicts
  */
 @theme {
-  /* Clear Tailwind's stock palette so ONLY design-system tokens produce
-     color utilities — e.g. text-neutral-500 (stock gray) won't compile,
-     text-neutral-2 (Figma token) will. White is neutral-1. */
   --color-*: initial;
+  --text-*: initial;
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --tracking-*: initial;
 
-  /* Neutral — surfaces and text */
+  /* ============================================================
+     [P] PROJECT PALETTE (dark theme) — primary source of truth
+     ============================================================ */
+
+  /* neutral — surfaces and text (5 = app background, 4 = cards) */
   --color-neutral-1: #ffffff;
   --color-neutral-2: #94979a;
   --color-neutral-3: #393d41;
   --color-neutral-4: #2c2f33;
   --color-neutral-5: #222528;
 
-  /* Primary — brand red (buttons, active states, alerts) */
-  --color-primary-1: #f3d4d2;
+  /* primary — brand red (buttons, active states, alerts) */
+  --color-primary-1: #f4ccc8;
   --color-primary-2: #eba59e;
   --color-primary-3: #e27d73;
   --color-primary-4: #da584b;
 
-  /* Secondary — amber (warnings, "due soon") */
-  --color-secondary-1: #f9eeda;
-  --color-secondary-2: #f1dbb1;
-  --color-secondary-3: #ebc88b;
-  --color-secondary-4: #e5b454;
+  /* secondary — green ("on time" due dates) */
+  --color-secondary-1: #c8e1bc;
+  --color-secondary-2: #aad199;
+  --color-secondary-3: #8dc275;
+  --color-secondary-4: #70b252;
 
-  /* Tertiary — green (success, "on time") */
-  --color-tertiary-1: #d9e9d7;
-  --color-tertiary-2: #b3d4b0;
-  --color-tertiary-3: #8dbe88;
-  --color-tertiary-4: #70b252;
+  /* tertiary — amber ("due soon" warnings) */
+  --color-tertiary-1: #f9eed7;
+  --color-tertiary-2: #f2daab;
+  --color-tertiary-3: #ebc77f;
+  --color-tertiary-4: #e5b454;
 
-  /* Typography — system fonts */
+  /* warning — orange scale (6 = darkest, text-on-warning) */
+  --color-warning-1: #fff8f3;
+  --color-warning-2: #ffdbc7;
+  --color-warning-3: #ffb388;
+  --color-warning-4: #ff9a61;
+  --color-warning-5: #fe833d;
+  --color-warning-6: #8e4f0b;
+
+  /* success — lime greens (steps 1-2 are not defined in the Figma file) */
+  --color-success-3: #a5e46c;
+  --color-success-4: #80da5b;
+
+  /* ============================================================
+     [S] STYLE-GUIDE PALETTE (light system) reference/secondary.
+     Prefixed `sg-` so provenance survives into class names and
+     autocomplete (e.g. `bg-sg-surface-default`), do not mix with
+     unprefixed [P] tokens in dashboard components.
+     ============================================================ */
+
+  /* base colors */
+  --color-sg-base-surface: #f0f0f0;
+  --color-sg-base-on-surface: #111213;
+  --color-sg-base-primary: #008060;
+  --color-sg-base-secondary: #cccccc;
+  --color-sg-base-interactive: #2e72d2;
+  --color-sg-base-critical: #d82c0d;
+  --color-sg-base-warning: #ffc453;
+  --color-sg-base-success: #008060;
+  --color-sg-base-highlight: #5bcdda;
+
+  /* background */
+  --color-sg-background-default: #f6f6f7;
+  --color-sg-background-hovered: #f1f2f3;
+  --color-sg-background-pressed: #edeeef;
+
+  /* surface + state variants */
+  --color-sg-surface-default: #ffffff;
+  --color-sg-surface-subdued: #fafbfb;
+  --color-sg-surface-hovered: #f6f6f7;
+  --color-sg-surface-pressed: #f1f2f3;
+  --color-sg-surface-depressed: #edeeef;
+  --color-sg-surface-disabled: #fafbfb;
+  --color-sg-surface-selected-default: #f2f7fe;
+  --color-sg-surface-selected-hovered: #edf4fe;
+  --color-sg-surface-selected-pressed: #e5effd;
+  --color-sg-surface-warning-default: #ffd79d;
+  --color-sg-surface-warning-subdued: #fff5ea;
+  --color-sg-surface-warning-subdued-hovered: #fff2e2;
+  --color-sg-surface-warning-subdued-pressed: #ffebd3;
+  --color-sg-surface-critical-default: #fed3d1;
+  --color-sg-surface-critical-subdued: #fff4f4;
+  --color-sg-surface-critical-subdued-hovered: #fff0f0;
+  --color-sg-surface-critical-subdued-pressed: #ffe9e8;
+  --color-sg-surface-critical-subdued-depressed: #febcb9;
+  --color-sg-surface-success-default: #aee9d1;
+  --color-sg-surface-success-subdued: #f1f8f5;
+  --color-sg-surface-success-subdued-hovered: #ecf6f1;
+  --color-sg-surface-success-subdued-pressed: #e2f1ea;
+  --color-sg-surface-highlight-default: #a4e8f2;
+  --color-sg-surface-highlight-subdued: #ebf9fc;
+  --color-sg-surface-highlight-subdued-hovered: #e4f7fa;
+  --color-sg-surface-highlight-subdued-pressed: #d5f3f8;
+  --color-sg-surface-neutral-default: #e4e5e7;
+  --color-sg-surface-neutral-subdued: #f6f6f7;
+  --color-sg-surface-neutral-hovered: #dbdddf;
+  --color-sg-surface-neutral-pressed: #c9ccd0;
+  --color-sg-surface-neutral-disabled: #f1f2f3;
+  --color-sg-surface-primary-selected: #f1f8f5;
+  --color-sg-surface-primary-hovered: #b3d0c3;
+  --color-sg-surface-primary-pressed: #a2bcb0;
+
+  /* text */
+  --color-sg-text-default: #202223;
+  --color-sg-text-subdued: #6d7175;
+  --color-sg-text-disabled: #8c9196;
+  --color-sg-text-critical: #d72c0d;
+  --color-sg-text-warning: #916a00;
+  --color-sg-text-success: #008060;
+  --color-sg-text-highlight: #347c84;
+  --color-sg-text-on-interactive: #ffffff;
+  --color-sg-text-on-primary: #ffffff;
+  --color-sg-text-on-critical: #ffffff;
+
+  /* icon */
+  --color-sg-icon-default: #5c5f62;
+  --color-sg-icon-subdued: #8c9196;
+  --color-sg-icon-hovered: #1a1c1d;
+  --color-sg-icon-pressed: #44474a;
+  --color-sg-icon-disabled: #babec3;
+  --color-sg-icon-critical: #d72c0d;
+  --color-sg-icon-warning: #b98900;
+  --color-sg-icon-success: #007f5f;
+  --color-sg-icon-highlight: #00a0ac;
+  --color-sg-icon-on-interactive: #ffffff;
+  --color-sg-icon-on-primary: #ffffff;
+  --color-sg-icon-on-critical: #ffffff;
+
+  /* interactive */
+  --color-sg-interactive-default: #2c6ecb;
+  --color-sg-interactive-hovered: #1f5199;
+  --color-sg-interactive-depressed: #103262;
+  --color-sg-interactive-disabled: #bdc1cc;
+  --color-sg-interactive-critical: #d82c0d;
+  --color-sg-interactive-critical-hovered: #cd290c;
+  --color-sg-interactive-critical-depressed: #670f03;
+  --color-sg-interactive-critical-disabled: #fd938d;
+
+  /* border */
+  --color-sg-border-default: #8c9196;
+  --color-sg-border-subdued: #c9cccf;
+  --color-sg-border-hovered: #999ea4;
+  --color-sg-border-depressed: #575959;
+  --color-sg-border-disabled: #d2d5d8;
+  --color-sg-border-shadow-subdued: #babfc4;
+  --color-sg-border-neutral-subdued: #babfc3;
+  --color-sg-border-critical-default: #fd5749;
+  --color-sg-border-critical-subdued: #e0b3b2;
+  --color-sg-border-critical-disabled: #ffa7a3;
+  --color-sg-border-success-default: #00a47c;
+  --color-sg-border-success-subdued: #95c9b4;
+  --color-sg-border-highlight-default: #449da7;
+  --color-sg-border-highlight-subdued: #98c6cd;
+
+  /* focus ring */
+  --color-sg-focused: #458fff;
+
+  /* actions (buttons) */
+  --color-sg-action-primary-default: #008060;
+  --color-sg-action-primary-hovered: #006e52;
+  --color-sg-action-primary-pressed: #005e46;
+  --color-sg-action-primary-depressed: #003d2c;
+  --color-sg-action-primary-disabled: #f1f1f1;
+  --color-sg-action-critical-default: #d82c0d;
+  --color-sg-action-critical-hovered: #bc2200;
+  --color-sg-action-critical-pressed: #a21b00;
+  --color-sg-action-critical-depressed: #6c0f00;
+  --color-sg-action-critical-disabled: #f1f1f1;
+  --color-sg-action-secondary-default: #ffffff;
+  --color-sg-action-secondary-hovered: #f6f6f7;
+  --color-sg-action-secondary-pressed: #f1f2f3;
+  --color-sg-action-secondary-depressed: #6d7175;
+  --color-sg-action-secondary-disabled: #ffffff;
+
+  /* decorative (avatars, tags) */
+  --color-sg-decorative-surface-1: #ffc96b;
+  --color-sg-decorative-surface-2: #ffc4b0;
+  --color-sg-decorative-surface-3: #92e6b5;
+  --color-sg-decorative-surface-4: #91e0d6;
+  --color-sg-decorative-surface-5: #fdc9d0;
+  --color-sg-decorative-icon-1: #7e5700;
+  --color-sg-decorative-icon-2: #af294e;
+  --color-sg-decorative-icon-3: #006d41;
+  --color-sg-decorative-icon-4: #006a68;
+  --color-sg-decorative-icon-5: #ae2b4c;
+  --color-sg-decorative-text-1: #3d2800;
+  --color-sg-decorative-text-2: #490b1c;
+  --color-sg-decorative-text-3: #002f19;
+  --color-sg-decorative-text-4: #002d2d;
+  --color-sg-decorative-text-5: #4f0e1f;
+
+  /* modal backdrop */
+  --color-sg-backdrop: #000000;
+
+  /* ============================================================
+     [P] TYPOGRAPHY — the project's Desktop scale (SF Pro Display
+     in Figma; served via the system-font stack below, which the
+     challenge recommends and which resolves to SF Pro on macOS).
+     Body "bold" variants are weight 600 → use `font-semibold`;
+     Display bold variants are 700 → use `font-bold`.
+     ============================================================ */
   --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  /* Letter-spacing stays in px (not em/rem): Figma specifies px, and
+     pixel-faithful design parity wins over root-font-size scaling here. */
+
+  /* Display: usage e.g. `text-display-m font-bold` */
+  --text-display-xl: 4rem; /* 64px */
+  --text-display-xl--line-height: 5.5rem; /* 88px */
+  --text-display-xl--letter-spacing: 1px;
+  --text-display-l: 3.5rem; /* 56px */
+  --text-display-l--line-height: 4.5rem; /* 72px */
+  --text-display-l--letter-spacing: 1px;
+  --text-display-m: 3rem; /* 48px */
+  --text-display-m--line-height: 3.5rem; /* 56px */
+  --text-display-m--letter-spacing: 1px;
+  --text-display-s: 2rem; /* 32px (regular) */
+  --text-display-s--line-height: 3rem; /* 48px */
+  --text-display-s--letter-spacing: 1px;
+  --text-display-s-bold: 2.5rem; /* 40px */
+  --text-display-s-bold--line-height: 3rem; /* 48px */
+  --text-display-s-bold--letter-spacing: 1px;
+  --text-display-s-bold--font-weight: 700;
+  --text-display-xs: 1.5rem; /* 24px */
+  --text-display-xs--line-height: 2rem; /* 32px */
+  --text-display-xs--letter-spacing: 1px;
+
+  /* Body: usage e.g. `text-body-m` / `text-body-m font-semibold` */
+  --text-body-xl: 1.25rem; /* 20px */
+  --text-body-xl--line-height: 2rem; /* 32px */
+  --text-body-xl--letter-spacing: 0.75px;
+  --text-body-l: 1.125rem; /* 18px */
+  --text-body-l--line-height: 2rem; /* 32px */
+  --text-body-l--letter-spacing: 0.75px;
+  --text-body-m: 0.9375rem; /* 15px */
+  --text-body-m--line-height: 1.5rem; /* 24px */
+  --text-body-m--letter-spacing: 0.75px;
+  --text-body-s: 0.8125rem; /* 13px */
+  --text-body-s--line-height: 1.25rem; /* 20px */
+  --text-body-s--letter-spacing: 0.25px;
+
+  /* ============================================================
+     SHADOWS — [S] Depth scale + [P] Drop Shadow Large.
+     Usage: `shadow-depth-2`, `shadow-drop-large`, `inset-shadow-depth`
+     ============================================================ */
+  --shadow-depth-1: 0 1px 0 0 rgb(0 0 0 / 0.05);
+  --shadow-depth-2: 0 0 1px 0 rgb(0 0 0 / 0.25), 0 2px 1px 0 rgb(0 0 0 / 0.05);
+  --shadow-depth-3: 0 2px 10px 0 rgb(0 0 0 / 0.1), 0 0 2px 0 rgb(0 0 0 / 0.2);
+  --shadow-depth-4: 0 4px 20px 0 rgb(0 0 0 / 0.15), 0 0 3px 0 rgb(0 0 0 / 0.1);
+  --shadow-depth-5: 0 8px 40px 0 rgb(0 0 0 / 0.2), 0 0 4px 0 rgb(0 0 0 / 0.1);
+  /* [P] project's own card/modal shadow */
+  --shadow-drop-large: 0 0 72px 0 rgb(0 0 0 / 0.04);
+  /* [S] "- 1 dp" inner shadow */
+  --inset-shadow-depth: inset 0 2px 0 0 rgb(0 0 0 / 0.05);
 }
 
+/*
+ * Plain CSS below, each rule earns its place because it targets things
+ * utility classes can't express well: document-wide defaults, pseudo-elements,
+ * and media-query-scoped resets. Everything component-scoped stays Tailwind.
+ */
 @layer base {
+  /* No font-family here: Tailwind's preflight already applies --font-sans
+     document-wide via --default-font-family. */
   body {
-    @apply bg-neutral-5 font-sans text-neutral-1 antialiased;
+    @apply bg-neutral-5 text-neutral-1 antialiased;
+  }
+
+  /* Token-driven focus ring ([S] Focused/Default) a global a11y default
+     that individual `focus:` utilities would have to repeat on every element. */
+  :focus-visible {
+    outline: 2px solid var(--color-sg-focused);
+    outline-offset: 2px;
+  }
+
+  :root {
+    scrollbar-color: var(--color-neutral-3) transparent;
+  }
+  * {
+    scrollbar-width: thin;
+  }
+
+  /* Respect OS-level motion preferences — a media query wrapping universal
+     selectors is inherently stylesheet-level, not per-component. The
+     !important in @layer base outranks even ! utilities, so essential
+     motion (e.g. a loading spinner) opts back in via data-allow-motion. */
+  @media (prefers-reduced-motion: reduce) {
+    *:not([data-allow-motion]),
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
