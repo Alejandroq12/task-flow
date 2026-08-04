@@ -299,8 +299,8 @@
      motion (e.g. a loading spinner) opts back in via data-allow-motion. */
   @media (prefers-reduced-motion: reduce) {
     *:not([data-allow-motion]),
-    ::before,
-    ::after {
+    *:not([data-allow-motion])::before,
+    *:not([data-allow-motion])::after {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
