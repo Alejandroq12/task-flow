@@ -8,14 +8,24 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineConfig(({ command, mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
 
-  if (command === 'serve' && mode !== 'test' && (!env.API_URL || !env.API_TOKEN)) {
-    throw new Error(
-      'Missing API_URL / API_TOKEN — copy .env.example to .env.local and add your token (see README).',
-    )
-  }
-
   const apiUrl = env.API_URL
   const apiToken = env.API_TOKEN
+
+  if (command === 'serve' && mode !== 'test') {
+    if (!apiUrl || !apiToken) {
+      throw new Error(
+        'Missing API_URL / API_TOKEN — copy .env.example to .env.local and add your token (see README).',
+      )
+    }
+    // The proxy forwards the Authorization header; plaintext http would send
+    // the token in cleartext. localhost is exempt for local mock servers.
+    const { protocol, hostname } = new URL(apiUrl)
+    if (protocol !== 'https:' && hostname !== 'localhost' && hostname !== '127.0.0.1') {
+      throw new Error(
+        `API_URL must use https (got ${protocol}//) — the Bearer token must never travel over plaintext http.`,
+      )
+    }
+  }
   const graphqlProxy =
     apiUrl && apiToken
       ? {
