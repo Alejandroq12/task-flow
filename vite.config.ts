@@ -14,18 +14,21 @@ export default defineConfig(({ command, mode }) => {
     )
   }
 
-  const graphqlProxy = env.API_URL
-    ? {
-        '/graphql': {
-          target: new URL(env.API_URL).origin,
-          changeOrigin: true,
-          rewrite: () => new URL(env.API_URL).pathname,
-          headers: {
-            Authorization: `Bearer ${env.API_TOKEN}`,
+  const apiUrl = env.API_URL
+  const apiToken = env.API_TOKEN
+  const graphqlProxy =
+    apiUrl && apiToken
+      ? {
+          '/graphql': {
+            target: new URL(apiUrl).origin,
+            changeOrigin: true,
+            rewrite: () => new URL(apiUrl).pathname,
+            headers: {
+              Authorization: `Bearer ${apiToken}`,
+            },
           },
-        },
-      }
-    : undefined
+        }
+      : undefined
 
   return {
     plugins: [react(), tailwindcss()],
