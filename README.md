@@ -1,6 +1,6 @@
 # Task Flow — Task Management App
 
-A task management application that I am building to manage your tasks and be super productive, connecting to a GraphQL API to browse, create, update, and organize tasks across a kanban-style dashboard.
+Task Flow is a task management app I'm building on top of a GraphQL API — browse, create, update, and organize tasks on a kanban-style dashboard.
 
 ## Live Demo
 
@@ -47,7 +47,7 @@ The app runs at `http://localhost:5173`.
 
 Real values live in `.env.local`, which is gitignored — never commit tokens. Both variables are also required by `npm run codegen`.
 
-> **Security note:** the token is deliberately **not** `VITE_`-prefixed, Vite inlines `VITE_*` variables into the public JS bundle, where anyone could extract them. Instead, the app calls the relative path `/graphql` and the dev server proxies it to the real API, attaching the `Authorization` header in Node (see `vite.config.ts`). The token never reaches the browser. A deployed build would need the same proxy as a serverless function, the static bundle alone cannot (and must not) carry the token.
+> **Security note:** the token is deliberately not `VITE_`-prefixed. Vite inlines `VITE_*` variables into the public JS bundle, where anyone could extract them. Instead, the app calls the relative path `/graphql`, and the dev server proxies it to the real API, attaching the `Authorization` header in Node (see `vite.config.ts`). The token never reaches the browser. A deployed build would need the same proxy as a serverless function — the static bundle alone cannot, and must not, carry the token — and that proxy would itself need caller authentication and rate limiting, since an open proxy holding a shared token is effectively an open relay to the API. `API_URL` must be `https` (enforced at startup); the token never travels over plaintext.
 
 ### Available scripts
 
@@ -116,5 +116,9 @@ src/
 <!-- TODO: list which bonus features I tackled, if any -->
 
 ## Additional Notes
+
+- **Generated GraphQL code is committed on purpose.** `src/graphql/generated/` (output of `npm run codegen`) is checked into git so CI can typecheck and build without holding the API token. Regenerate after changing any query/mutation; never edit by hand.
+- **Quality gates are CI-enforced, not hook-enforced.** There are deliberately no git hooks (husky/lint-staged): CI runs format check, lint, typecheck, tests, and build on every PR, and the same scripts run locally on demand. Hooks can be added later if commit-time enforcement proves necessary.
+- **Node 24 is a hard requirement** — `.npmrc` sets `engine-strict=true`, so `npm install` fails fast on older Node instead of warning.
 
 <!-- TODO: anything else worth mentioning — known limitations, things I'd want feedback on, etc. -->
