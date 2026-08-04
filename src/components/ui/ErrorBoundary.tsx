@@ -17,7 +17,12 @@ export class ErrorBoundary extends Component<
         this.props.fallback ?? (
           <div role="alert">
             <p>Something went wrong.</p>
-            <button type="button" onClick={() => window.location.reload()}>
+            <button
+              type="button"
+              onClick={() => {
+                window.location.reload()
+              }}
+            >
               Reload page
             </button>
           </div>
