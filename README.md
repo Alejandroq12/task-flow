@@ -120,5 +120,6 @@ src/
 - **Generated GraphQL code is committed on purpose.** `src/graphql/generated/` (output of `npm run codegen`) is checked into git so CI can typecheck and build without holding the API token. Regenerate after changing any query/mutation; never edit by hand.
 - **Quality gates are CI-enforced, not hook-enforced.** There are deliberately no git hooks (husky/lint-staged): CI runs format check, lint, typecheck, tests, and build on every PR, and the same scripts run locally on demand. Hooks can be added later if commit-time enforcement proves necessary.
 - **Node 24 is a hard requirement** — `.npmrc` sets `engine-strict=true`, so `npm install` fails fast on older Node instead of warning.
+- **A11y deviation from the design, flagged and recommended per mentor guidance:** the Figma's active-tab red (`primary-4`, `#da584b`) on the dark surface measures ≈3.5:1 below WCAG AA's 4.5:1 for 15px text. Following the design team's process (flag + recommend), the active label uses `primary-3` (`#e27d73`) one step up the design system's own red scale measuring ≈4.7:1 (≈4.5:1 worst-case over the 5% gradient wash). The indicator bar stays `primary-4` (non-text graphic, 3:1 rule, passes). The active state is also conveyed non-visually via `aria-current="page"`.
 
 <!-- TODO: anything else worth mentioning — known limitations, things I'd want feedback on, etc. -->
