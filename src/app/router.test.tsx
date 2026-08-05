@@ -63,6 +63,16 @@ describe('sidebar navigation', () => {
   })
 })
 
+describe('header', () => {
+  it('renders a controlled search input', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+    const search = screen.getByRole('textbox', { name: /search/i })
+    await user.type(search, 'slack')
+    expect(search).toHaveValue('slack')
+  })
+})
+
 describe('mobile navigation drawer', () => {
   it('opens from the header trigger and exposes a backdrop', async () => {
     const user = userEvent.setup()
