@@ -46,7 +46,7 @@ export function Sidebar() {
                 className={({ isActive }) =>
                   `flex h-14 items-center gap-4 pl-4 text-body-m font-semibold uppercase focus-visible:-outline-offset-2 ${
                     isActive
-                      ? 'bg-linear-to-r from-primary-4/0 to-primary-4/10 text-primary-4'
+                      ? 'bg-linear-to-r from-primary-4/0 to-primary-4/5 text-primary-3'
                       : 'text-neutral-2 hover:text-neutral-1'
                   }`
                 }
