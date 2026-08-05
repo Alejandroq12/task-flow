@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { routes } from '@/app/router'
@@ -59,5 +60,53 @@ describe('sidebar navigation', () => {
     const nav = within(screen.getByRole('navigation'))
     expect(nav.getByRole('link', { name: /my task/i })).not.toHaveAttribute('aria-current')
     expect(nav.getByRole('link', { name: /dashboard/i })).not.toHaveAttribute('aria-current')
+  })
+})
+
+describe('mobile navigation drawer', () => {
+  it('opens from the header trigger and exposes a backdrop', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+    const trigger = screen.getByRole('button', { name: /open navigation/i })
+    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    await user.click(trigger)
+    expect(trigger).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('button', { name: /close navigation/i })).toBeInTheDocument()
+  })
+
+  it('closes when the backdrop is clicked', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+    await user.click(screen.getByRole('button', { name: /open navigation/i }))
+    await user.click(screen.getByRole('button', { name: /close navigation/i }))
+    expect(screen.getByRole('button', { name: /open navigation/i })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    )
+    expect(screen.queryByRole('button', { name: /close navigation/i })).not.toBeInTheDocument()
+  })
+
+  it('closes after navigating via a sidebar link', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+    await user.click(screen.getByRole('button', { name: /open navigation/i }))
+    const nav = within(screen.getByRole('navigation'))
+    await user.click(nav.getByRole('link', { name: /my task/i }))
+    expect(screen.getByRole('heading', { name: /my task/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /open navigation/i })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    )
+  })
+
+  it('closes on Escape', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+    await user.click(screen.getByRole('button', { name: /open navigation/i }))
+    await user.keyboard('{Escape}')
+    expect(screen.getByRole('button', { name: /open navigation/i })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    )
   })
 })
