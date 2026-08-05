@@ -22,7 +22,7 @@ export function Layout() {
   }, [sidebarOpen])
 
   return (
-    <div className="flex h-dvh overflow-hidden lg:p-12">
+    <div className="flex h-dvh overflow-hidden lg:gap-8 lg:p-8">
       <Sidebar
         open={sidebarOpen}
         onClose={() => {
@@ -36,7 +36,7 @@ export function Layout() {
             setSidebarOpen(true)
           }}
         />
-        <main className="flex-1 overflow-y-auto p-4 lg:p-6">
+        <main className="flex-1 overflow-y-auto p-4 lg:p-0 lg:pt-8">
           <ErrorBoundary key={location.pathname}>
             <Outlet />
           </ErrorBoundary>

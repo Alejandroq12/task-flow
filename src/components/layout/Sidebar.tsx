@@ -47,7 +47,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       )}
       <aside
         id="app-sidebar"
-        className={`${open ? 'visible translate-x-0' : 'invisible -translate-x-full'} fixed inset-y-0 left-0 z-40 w-77.5 overflow-hidden bg-neutral-4 transition-[transform,visibility] lg:visible lg:static lg:z-auto lg:h-full lg:w-64 lg:shrink-0 lg:translate-x-0 lg:rounded-3xl`}
+        className={`${open ? 'visible translate-x-0' : 'invisible -translate-x-full'} fixed inset-y-0 left-0 z-40 w-77.5 overflow-hidden bg-neutral-4 transition-[transform,visibility] lg:visible lg:static lg:z-auto lg:h-full lg:w-58 lg:shrink-0 lg:translate-x-0 lg:rounded-3xl`}
       >
         <div className="flex items-center justify-center pt-9 pb-11">
           <img className="size-10" src={logoUrl} alt="Ravn" />
