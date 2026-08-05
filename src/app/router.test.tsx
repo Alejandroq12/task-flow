@@ -99,6 +99,16 @@ describe('mobile navigation drawer', () => {
     )
   })
 
+  it('keeps the closed drawer out of the tab order via the visibility contract', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+    const aside = document.getElementById('app-sidebar')
+    expect(aside).toHaveClass('invisible')
+    await user.click(screen.getByRole('button', { name: /open navigation/i }))
+    expect(aside).toHaveClass('visible')
+    expect(aside).not.toHaveClass('invisible')
+  })
+
   it('closes on Escape', async () => {
     const user = userEvent.setup()
     renderAt('/')
