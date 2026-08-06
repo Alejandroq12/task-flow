@@ -104,7 +104,7 @@ src/
 
 - [x] Initial setup (folder structure, routing, styles solution, linting/formatting, error boundary, tests, CI)
 - [x] Dashboard UI (static): sidebar with mobile drawer, header, toolbar, five status columns, task cards
-- [ ] API connection — fetch tasks, loading/error/empty states
+- [x] API connection — fetch tasks into their status columns, with loading skeleton, failure alert + retry, and empty state
 - [ ] Create task
 - [ ] Update task
 - [ ] Delete task
