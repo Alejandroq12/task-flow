@@ -6,7 +6,6 @@ import { Settings } from '@/features/settings/Settings'
 import { NotFound } from '@/app/NotFound'
 import { RouteError } from '@/app/RouteError'
 
-// Exported separately so tests can mount the same tree with createMemoryRouter.
 export const routes: RouteObject[] = [
   {
     path: '/',

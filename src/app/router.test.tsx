@@ -22,22 +22,22 @@ function renderAt(path: string) {
 describe('app routes', () => {
   it('renders the dashboard at /', () => {
     renderAt('/')
-    expect(screen.getByRole('heading', { name: /dashboard/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: /dashboard/i })).toBeInTheDocument()
   })
 
   it('renders the settings page at /settings', () => {
     renderAt('/settings')
-    expect(screen.getByRole('heading', { name: /settings/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: /settings/i })).toBeInTheDocument()
   })
 
   it('renders the not-found page for unknown paths', () => {
     renderAt('/does-not-exist')
-    expect(screen.getByRole('heading', { name: /not found/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: /not found/i })).toBeInTheDocument()
   })
 
   it('renders the my-task placeholder page at /my-task', () => {
     renderAt('/my-task')
-    expect(screen.getByRole('heading', { name: /my task/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: /my task/i })).toBeInTheDocument()
   })
 })
 
@@ -56,10 +56,50 @@ describe('sidebar navigation', () => {
 
   it('marks nothing active on unknown deep paths (renders not-found)', () => {
     renderAt('/my-task/anything')
-    expect(screen.getByRole('heading', { name: /not found/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: /not found/i })).toBeInTheDocument()
     const nav = within(screen.getByRole('navigation'))
     expect(nav.getByRole('link', { name: /my task/i })).not.toHaveAttribute('aria-current')
     expect(nav.getByRole('link', { name: /dashboard/i })).not.toHaveAttribute('aria-current')
+  })
+})
+
+describe('dashboard main content', () => {
+  it('renders the five required status columns', () => {
+    renderAt('/')
+    for (const title of ['Backlog', 'To Do', 'In Progress', 'Done', 'Cancelled']) {
+      expect(
+        screen.getByRole('heading', { level: 2, name: new RegExp(title, 'i') }),
+      ).toBeInTheDocument()
+    }
+  })
+
+  it('renders a task card with its required fields', () => {
+    renderAt('/')
+    const card = screen.getByRole('heading', { level: 3, name: /twitter/i }).closest('article')
+    if (!card) throw new Error('expected the Twitter card to render inside an <article>')
+    const scoped = within(card)
+    expect(scoped.getByText(/3 pts/i)).toBeInTheDocument()
+    expect(scoped.getByText(/yesterday/i)).toBeInTheDocument()
+    expect(scoped.getByText(/ios app/i)).toBeInTheDocument()
+    expect(scoped.getByText(/android/i)).toBeInTheDocument()
+    expect(scoped.getByRole('img', { name: /assignee/i })).toBeInTheDocument()
+    expect(scoped.getByRole('img', { name: /task options/i })).toBeInTheDocument()
+  })
+
+  it('renders the toolbar view icons and the add-task affordance', () => {
+    renderAt('/')
+    expect(screen.getByRole('img', { name: /grid view/i })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /list view/i })).toBeInTheDocument()
+    expect(screen.getAllByRole('img', { name: /add task/i }).length).toBeGreaterThan(0)
+  })
+
+  it('marks the correct mobile tab active per route', () => {
+    renderAt('/my-task')
+    const taskTab = screen.getByText('Task')
+    const tabs = taskTab.parentElement?.parentElement
+    if (!tabs) throw new Error('expected the mobile tabs container to exist')
+    expect(taskTab).toHaveClass('text-primary-4')
+    expect(within(tabs).getByText('Dashboard')).toHaveClass('text-neutral-2')
   })
 })
 
@@ -102,7 +142,7 @@ describe('mobile navigation drawer', () => {
     await user.click(screen.getByRole('button', { name: /open navigation/i }))
     const nav = within(screen.getByRole('navigation'))
     await user.click(nav.getByRole('link', { name: /my task/i }))
-    expect(screen.getByRole('heading', { name: /my task/i })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { level: 1, name: /my task/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /open navigation/i })).toHaveAttribute(
       'aria-expanded',
       'false',

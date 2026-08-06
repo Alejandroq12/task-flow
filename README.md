@@ -26,7 +26,7 @@ _Live app and video walkthrough coming soon._
 
 ## Setup & Running Locally
 
-Requires Node 24 (see `.nvmrc`).
+Requires Node 24.14.1+ (see `.nvmrc`) — the first Node 24 release whose bundled npm satisfies the `min-release-age` support floor (the feature landed in npm 11.10.0).
 
 ```bash
 git clone https://github.com/Alejandroq12/task-flow.git
@@ -103,7 +103,7 @@ src/
 ## What's Implemented
 
 - [x] Initial setup (folder structure, routing, styles solution, linting/formatting, error boundary, tests, CI)
-- [ ] Dashboard UI (static)
+- [x] Dashboard UI (static): sidebar with mobile drawer, header, toolbar, five status columns, task cards
 - [ ] API connection — fetch tasks, loading/error/empty states
 - [ ] Create task
 - [ ] Update task
