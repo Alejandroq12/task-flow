@@ -1,20 +1,22 @@
 import avatarUrl from '@/assets/avatar.png'
 import { AlarmIcon, AttachIcon, ChatIcon, DotsIcon, ForkIcon } from '@/features/tasks/icons'
-import type { SampleTask, TagTone } from '@/features/tasks/sample-tasks'
+import type { Task, TagTone } from '@/features/tasks/types'
 
 const tagToneClasses: Record<TagTone, string> = {
   secondary: 'bg-secondary-4/10 text-secondary-4',
   tertiary: 'bg-tertiary-4/10 text-tertiary-4',
 }
 
-export function TaskCard({ task }: { task: SampleTask }) {
+export function TaskCard({ task }: { task: Task }) {
   return (
     <article className="flex flex-col gap-4 rounded-lg bg-neutral-4 p-4">
       <div className="flex h-8 items-center gap-2">
         <h3 className="min-w-0 flex-1 truncate text-body-l font-semibold text-neutral-1">
           {task.name}
         </h3>
-        <DotsIcon className="size-6 shrink-0 text-neutral-1" />
+        <span role="img" aria-label="Task options" className="shrink-0">
+          <DotsIcon className="size-6 text-neutral-1" />
+        </span>
       </div>
       <div className="flex items-center justify-between">
         <span className="text-body-m font-semibold text-neutral-1">{task.points} Pts</span>

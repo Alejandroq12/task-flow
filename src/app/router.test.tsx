@@ -83,6 +83,23 @@ describe('dashboard main content', () => {
     expect(scoped.getByText(/ios app/i)).toBeInTheDocument()
     expect(scoped.getByText(/android/i)).toBeInTheDocument()
     expect(scoped.getByRole('img', { name: /assignee/i })).toBeInTheDocument()
+    expect(scoped.getByRole('img', { name: /task options/i })).toBeInTheDocument()
+  })
+
+  it('renders the toolbar view icons and the add-task affordance', () => {
+    renderAt('/')
+    expect(screen.getByRole('img', { name: /grid view/i })).toBeInTheDocument()
+    expect(screen.getByRole('img', { name: /list view/i })).toBeInTheDocument()
+    expect(screen.getAllByRole('img', { name: /add task/i }).length).toBeGreaterThan(0)
+  })
+
+  it('marks the correct mobile tab active per route', () => {
+    renderAt('/my-task')
+    const taskTab = screen.getByText('Task')
+    const tabs = taskTab.parentElement?.parentElement
+    if (!tabs) throw new Error('expected the mobile tabs container to exist')
+    expect(taskTab).toHaveClass('text-primary-4')
+    expect(within(tabs).getByText('Dashboard')).toHaveClass('text-neutral-2')
   })
 })
 

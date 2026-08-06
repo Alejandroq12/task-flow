@@ -1,5 +1,5 @@
 import { TaskCard } from '@/features/tasks/TaskCard'
-import type { BoardColumn } from '@/features/tasks/sample-tasks'
+import type { BoardColumn } from '@/features/tasks/types'
 
 export function TaskBoard({ columns }: { columns: BoardColumn[] }) {
   return (

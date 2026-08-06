@@ -1,20 +1,4 @@
-export type TagTone = 'secondary' | 'tertiary'
-
-export interface SampleTask {
-  id: string
-  name: string
-  points: number
-  dueLabel: string
-  overdue?: boolean
-  forks: number
-  comments: number
-  tags: { label: string; tone: TagTone }[]
-}
-
-export interface BoardColumn {
-  title: string
-  tasks: SampleTask[]
-}
+import type { BoardColumn } from '@/features/tasks/types'
 
 const appTags = [
   { label: 'IOS APP', tone: 'secondary' as const },
