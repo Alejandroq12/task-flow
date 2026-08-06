@@ -103,7 +103,7 @@ src/
 ## What's Implemented
 
 - [x] Initial setup (folder structure, routing, styles solution, linting/formatting, error boundary, tests, CI)
-- [ ] Dashboard UI (static)
+- [x] Dashboard UI (static): sidebar with mobile drawer, header, toolbar, five status columns, task cards
 - [ ] API connection — fetch tasks, loading/error/empty states
 - [ ] Create task
 - [ ] Update task
