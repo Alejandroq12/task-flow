@@ -26,7 +26,7 @@ _Live app and video walkthrough coming soon._
 
 ## Setup & Running Locally
 
-Requires Node 24 (see `.nvmrc`).
+Requires Node 24.14.1+ (see `.nvmrc` — its bundled npm 11.11 is the first that enforces `min-release-age`).
 
 ```bash
 git clone https://github.com/Alejandroq12/task-flow.git
