@@ -1,6 +1,6 @@
 # Task Flow — Task Management App
 
-A task management application that I am building to manage your tasks and be super productive, connecting to a GraphQL API to browse, create, update, and organize tasks across a kanban-style dashboard.
+Task Flow is a task management app I'm building on top of a GraphQL API — browse, create, update, and organize tasks on a kanban-style dashboard.
 
 ## Live Demo
 
@@ -26,7 +26,7 @@ _Live app and video walkthrough coming soon._
 
 ## Setup & Running Locally
 
-Requires Node 24 (see `.nvmrc`).
+Requires Node 24.14.1+ (see `.nvmrc`) — the first Node 24 release whose bundled npm satisfies the `min-release-age` support floor (the feature landed in npm 11.10.0).
 
 ```bash
 git clone https://github.com/Alejandroq12/task-flow.git
@@ -47,7 +47,7 @@ The app runs at `http://localhost:5173`.
 
 Real values live in `.env.local`, which is gitignored — never commit tokens. Both variables are also required by `npm run codegen`.
 
-> **Security note:** the token is deliberately **not** `VITE_`-prefixed, Vite inlines `VITE_*` variables into the public JS bundle, where anyone could extract them. Instead, the app calls the relative path `/graphql` and the dev server proxies it to the real API, attaching the `Authorization` header in Node (see `vite.config.ts`). The token never reaches the browser. A deployed build would need the same proxy as a serverless function, the static bundle alone cannot (and must not) carry the token.
+> **Security note:** the token is deliberately not `VITE_`-prefixed. Vite inlines `VITE_*` variables into the public JS bundle, where anyone could extract them. Instead, the app calls the relative path `/graphql`, and the dev server proxies it to the real API, attaching the `Authorization` header in Node (see `vite.config.ts`). The token never reaches the browser. A deployed build would need the same proxy as a serverless function — the static bundle alone cannot, and must not, carry the token — and that proxy would itself need caller authentication and rate limiting, since an open proxy holding a shared token is effectively an open relay to the API. `API_URL` must be `https` (enforced at startup); the token never travels over plaintext.
 
 ### Available scripts
 
@@ -103,7 +103,7 @@ src/
 ## What's Implemented
 
 - [x] Initial setup (folder structure, routing, styles solution, linting/formatting, error boundary, tests, CI)
-- [ ] Dashboard UI (static)
+- [x] Dashboard UI (static): sidebar with mobile drawer, header, toolbar, five status columns, task cards
 - [ ] API connection — fetch tasks, loading/error/empty states
 - [ ] Create task
 - [ ] Update task
@@ -116,5 +116,10 @@ src/
 <!-- TODO: list which bonus features I tackled, if any -->
 
 ## Additional Notes
+
+- **Generated GraphQL code is committed on purpose.** `src/graphql/generated/` (output of `npm run codegen`) is checked into git so CI can typecheck and build without holding the API token. Regenerate after changing any query/mutation; never edit by hand.
+- **Quality gates are CI-enforced, not hook-enforced.** There are deliberately no git hooks (husky/lint-staged): CI runs format check, lint, typecheck, tests, and build on every PR, and the same scripts run locally on demand. Hooks can be added later if commit-time enforcement proves necessary.
+- **Node 24 is a hard requirement** — `.npmrc` sets `engine-strict=true`, so `npm install` fails fast on older Node instead of warning.
+- **A11y deviation from the design, flagged and recommended per mentor guidance:** the Figma's active-tab red (`primary-4`, `#da584b`) on the dark surface measures ≈3.5:1 below WCAG AA's 4.5:1 for 15px text. Following the design team's process (flag + recommend), the active label uses `primary-3` (`#e27d73`) one step up the design system's own red scale measuring ≈4.7:1 (≈4.5:1 worst-case over the 5% gradient wash). The indicator bar stays `primary-4` (non-text graphic, 3:1 rule, passes). The active state is also conveyed non-visually via `aria-current="page"`.
 
 <!-- TODO: anything else worth mentioning — known limitations, things I'd want feedback on, etc. -->

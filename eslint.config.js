@@ -7,18 +7,23 @@ import prettier from 'eslint-config-prettier'
 export default tseslint.config(
   { ignores: ['dist', 'coverage', 'src/graphql/generated'] },
   {
-    extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
+    extends: [
+      js.configs.recommended,
+      ...tseslint.configs.strictTypeChecked,
+      ...tseslint.configs.stylisticTypeChecked,
+    ],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
+        // Derives type information from the tsconfig closest to each file
+        // no manual project list to keep in sync when tsconfigs change.
+        projectService: true,
         tsconfigRootDir: import.meta.dirname,
       },
     },
     plugins: { 'react-hooks': reactHooks, 'react-refresh': reactRefresh },
     rules: {
       ...reactHooks.configs.recommended.rules,
-      '@typescript-eslint/no-explicit-any': 'error',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
     },
   },
