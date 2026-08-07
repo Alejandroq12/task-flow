@@ -78,17 +78,3 @@ export const DeleteTaskDocument = graphql(`
     }
   }
 `)
-
-export const ProfileDocument = graphql(`
-  query Profile {
-    profile {
-      id
-      fullName
-      email
-      type
-      avatar
-      createdAt
-      updatedAt
-    }
-  }
-`)

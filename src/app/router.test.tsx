@@ -11,7 +11,8 @@ import {
   makeFixtureUsers,
   tasksRequestMock,
 } from '@/test/fixtures'
-import { ProfileDocument, UsersDocument } from '@/features/tasks/queries'
+import { UsersDocument } from '@/features/tasks/queries'
+import { ProfileDocument } from '@/lib/profile'
 
 vi.mock('@/lib/graphql-client', () => ({
   graphqlClient: { request: vi.fn() },
@@ -73,20 +74,22 @@ describe('app routes', () => {
 describe('sidebar navigation', () => {
   it('marks only the active item with aria-current', () => {
     renderAt('/')
-    expect(screen.getByRole('link', { name: /dashboard/i })).toHaveAttribute('aria-current', 'page')
-    expect(screen.getByRole('link', { name: /my task/i })).not.toHaveAttribute('aria-current')
+    const nav = within(screen.getByRole('navigation', { name: /main/i }))
+    expect(nav.getByRole('link', { name: /dashboard/i })).toHaveAttribute('aria-current', 'page')
+    expect(nav.getByRole('link', { name: /my task/i })).not.toHaveAttribute('aria-current')
   })
 
   it('moves aria-current when the route changes', () => {
     renderAt('/my-task')
-    expect(screen.getByRole('link', { name: /my task/i })).toHaveAttribute('aria-current', 'page')
-    expect(screen.getByRole('link', { name: /dashboard/i })).not.toHaveAttribute('aria-current')
+    const nav = within(screen.getByRole('navigation', { name: /main/i }))
+    expect(nav.getByRole('link', { name: /my task/i })).toHaveAttribute('aria-current', 'page')
+    expect(nav.getByRole('link', { name: /dashboard/i })).not.toHaveAttribute('aria-current')
   })
 
   it('marks nothing active on unknown deep paths (renders not-found)', () => {
     renderAt('/my-task/anything')
     expect(screen.getByRole('heading', { level: 1, name: /not found/i })).toBeInTheDocument()
-    const nav = within(screen.getByRole('navigation'))
+    const nav = within(screen.getByRole('navigation', { name: /main/i }))
     expect(nav.getByRole('link', { name: /my task/i })).not.toHaveAttribute('aria-current')
     expect(nav.getByRole('link', { name: /dashboard/i })).not.toHaveAttribute('aria-current')
   })
@@ -125,13 +128,18 @@ describe('dashboard main content', () => {
     expect(screen.getAllByRole('button', { name: /add task/i }).length).toBeGreaterThan(0)
   })
 
-  it('marks the correct mobile tab active per route', () => {
-    renderAt('/my-task')
-    const taskTab = screen.getByText('Task')
-    const tabs = taskTab.parentElement?.parentElement
-    if (!tabs) throw new Error('expected the mobile tabs container to exist')
-    expect(taskTab).toHaveClass('text-primary-4')
-    expect(within(tabs).getByText('Dashboard')).toHaveClass('text-neutral-2')
+  it('mobile tabs switch the layout and survive navigation', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+    expect(screen.getByRole('button', { name: 'Dashboard' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    await user.click(screen.getByRole('button', { name: 'Task' }))
+    expect(screen.getByRole('button', { name: 'Task' })).toHaveAttribute('aria-pressed', 'true')
+    const nav = within(screen.getByRole('navigation', { name: /main/i }))
+    await user.click(nav.getByRole('link', { name: /my task/i }))
+    expect(screen.getByRole('button', { name: 'Task' })).toHaveAttribute('aria-pressed', 'true')
   })
 })
 
@@ -197,7 +205,7 @@ describe('mobile navigation drawer', () => {
     const user = userEvent.setup()
     renderAt('/')
     await user.click(screen.getByRole('button', { name: /open navigation/i }))
-    const nav = within(screen.getByRole('navigation'))
+    const nav = within(screen.getByRole('navigation', { name: /main/i }))
     await user.click(nav.getByRole('link', { name: /my task/i }))
     expect(screen.getByRole('heading', { level: 1, name: /my task/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /open navigation/i })).toHaveAttribute(

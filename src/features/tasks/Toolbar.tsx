@@ -1,9 +1,13 @@
 import { useState } from 'react'
-import { useLocation } from 'react-router'
 import { GridIcon, ListIcon } from '@/components/ui/icons'
 import { PlusIcon } from '@/features/tasks/icons'
 import { CreateTaskModal } from '@/features/tasks/CreateTaskModal'
-import type { BoardLayout } from '@/features/tasks/types'
+import type { BoardLayout } from '@/components/layout/view-layout'
+
+const MOBILE_TABS: { label: string; value: BoardLayout }[] = [
+  { label: 'Dashboard', value: 'grid' },
+  { label: 'Task', value: 'list' },
+]
 
 interface ToolbarProps {
   layout: BoardLayout
@@ -11,24 +15,29 @@ interface ToolbarProps {
 }
 
 export function Toolbar({ layout, onLayoutChange }: ToolbarProps) {
-  const { pathname } = useLocation()
   const [createOpen, setCreateOpen] = useState(false)
-  const onMyTask = pathname === '/my-task'
   return (
     <div>
       <div className="-mx-4 flex lg:hidden">
-        {[
-          { label: 'Dashboard', active: !onMyTask },
-          { label: 'Task', active: onMyTask },
-        ].map((tab) => (
-          <div key={tab.label} className="flex flex-1 flex-col">
+        {MOBILE_TABS.map((tab) => (
+          <button
+            key={tab.label}
+            type="button"
+            aria-pressed={layout === tab.value}
+            onClick={() => {
+              onLayoutChange(tab.value)
+            }}
+            className="flex flex-1 flex-col"
+          >
             <span
-              className={`w-full pt-3 pb-2 text-center text-body-s ${tab.active ? 'text-primary-4' : 'text-neutral-2'}`}
+              className={`w-full pt-3 pb-2 text-center text-body-s ${layout === tab.value ? 'text-primary-4' : 'text-neutral-2'}`}
             >
               {tab.label}
             </span>
-            <span className={`h-0.5 w-full ${tab.active ? 'bg-primary-4' : 'bg-transparent'}`} />
-          </div>
+            <span
+              className={`h-0.5 w-full ${layout === tab.value ? 'bg-primary-4' : 'bg-transparent'}`}
+            />
+          </button>
         ))}
       </div>
       <div className="hidden items-center justify-between py-1 lg:flex">

@@ -1,22 +1,16 @@
-import { useState } from 'react'
 import { useSearchParams } from 'react-router'
-import { useQuery } from '@tanstack/react-query'
-import { graphqlClient } from '@/lib/graphql-client'
-import { ProfileDocument } from '@/features/tasks/queries'
-import { QueryErrorAlert } from '@/features/tasks/QueryErrorAlert'
+import { useProfile } from '@/lib/profile'
+import { QueryErrorAlert } from '@/components/ui/QueryErrorAlert'
 import { Toolbar } from '@/features/tasks/Toolbar'
 import { FilterBar } from '@/features/tasks/FilterBar'
 import { TasksView } from '@/features/tasks/TasksView'
 import { filterInputFromParams, hasActiveFilters } from '@/features/tasks/filter-params'
-import type { BoardLayout } from '@/features/tasks/types'
+import { useViewLayout } from '@/components/layout/view-layout'
 
 export function MyTask() {
-  const [layout, setLayout] = useState<BoardLayout>('list')
+  const { layout, setLayout } = useViewLayout()
   const [searchParams] = useSearchParams()
-  const profile = useQuery({
-    queryKey: ['profile'],
-    queryFn: () => graphqlClient.request(ProfileDocument),
-  })
+  const profile = useProfile()
 
   return (
     <div className="flex h-full flex-col gap-5 lg:gap-4">

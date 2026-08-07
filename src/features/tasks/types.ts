@@ -6,5 +6,3 @@ export interface BoardColumn {
   title: string
   tasks: ApiTask[]
 }
-
-export type BoardLayout = 'grid' | 'list'
