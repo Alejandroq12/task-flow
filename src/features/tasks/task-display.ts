@@ -20,7 +20,7 @@ export function groupTasksByStatus(tasks: ApiTask[]): BoardColumn[] {
   }))
 }
 
-const POINTS: Record<PointEstimate, number> = {
+export const POINTS: Record<PointEstimate, number> = {
   ZERO: 0,
   ONE: 1,
   TWO: 2,
@@ -53,3 +53,8 @@ export function dueInfo(dueDate: string): { label: string; overdue: boolean } {
     overdue: dayDiff < 0,
   }
 }
+
+const LEGACY_DICEBEAR = /^https:\/\/avatars\.dicebear\.com\/api\/([^/]+)\/(.+)\.svg$/
+
+export const avatarSrc = (avatar: string | null | undefined) =>
+  avatar?.replace(LEGACY_DICEBEAR, 'https://api.dicebear.com/9.x/$1/svg?seed=$2')

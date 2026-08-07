@@ -1,9 +1,12 @@
+import { useState } from 'react'
 import { useLocation } from 'react-router'
 import { GridIcon, ListIcon } from '@/components/ui/icons'
 import { PlusIcon } from '@/features/tasks/icons'
+import { CreateTaskModal } from '@/features/tasks/CreateTaskModal'
 
 export function Toolbar() {
   const { pathname } = useLocation()
+  const [createOpen, setCreateOpen] = useState(false)
   const onMyTask = pathname === '/my-task'
   return (
     <div>
@@ -42,21 +45,36 @@ export function Toolbar() {
             <GridIcon className="size-6 text-primary-4" />
           </span>
         </div>
-        <span
-          role="img"
+        <button
+          type="button"
           aria-label="Add task"
+          aria-haspopup="dialog"
+          onClick={() => {
+            setCreateOpen(true)
+          }}
           className="flex size-10 items-center justify-center rounded-lg bg-primary-4"
         >
           <PlusIcon className="size-6 text-neutral-1" />
-        </span>
+        </button>
       </div>
-      <span
-        role="img"
+      <button
+        type="button"
         aria-label="Add task"
+        aria-haspopup="dialog"
+        onClick={() => {
+          setCreateOpen(true)
+        }}
         className="fixed right-4 bottom-4 z-20 flex size-16 items-center justify-center rounded-full bg-primary-4 lg:hidden"
       >
         <PlusIcon className="size-7 text-neutral-1" />
-      </span>
+      </button>
+      {createOpen && (
+        <CreateTaskModal
+          onClose={() => {
+            setCreateOpen(false)
+          }}
+        />
+      )}
     </div>
   )
 }

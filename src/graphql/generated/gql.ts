@@ -15,9 +15,13 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  */
 type Documents = {
     "\n  query Tasks($input: FilterTaskInput!) {\n    tasks(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n": typeof types.TasksDocument,
+    "\n  mutation CreateTask($input: CreateTaskInput!) {\n    createTask(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n": typeof types.CreateTaskDocument,
+    "\n  query Users {\n    users {\n      id\n      fullName\n      avatar\n    }\n  }\n": typeof types.UsersDocument,
 };
 const documents: Documents = {
     "\n  query Tasks($input: FilterTaskInput!) {\n    tasks(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n": types.TasksDocument,
+    "\n  mutation CreateTask($input: CreateTaskInput!) {\n    createTask(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n": types.CreateTaskDocument,
+    "\n  query Users {\n    users {\n      id\n      fullName\n      avatar\n    }\n  }\n": types.UsersDocument,
 };
 
 /**
@@ -38,6 +42,14 @@ export function graphql(source: string): unknown;
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "\n  query Tasks($input: FilterTaskInput!) {\n    tasks(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n"): (typeof documents)["\n  query Tasks($input: FilterTaskInput!) {\n    tasks(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  mutation CreateTask($input: CreateTaskInput!) {\n    createTask(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n"): (typeof documents)["\n  mutation CreateTask($input: CreateTaskInput!) {\n    createTask(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "\n  query Users {\n    users {\n      id\n      fullName\n      avatar\n    }\n  }\n"): (typeof documents)["\n  query Users {\n    users {\n      id\n      fullName\n      avatar\n    }\n  }\n"];
 
 export function graphql(source: string) {
   return (documents as any)[source] ?? {};
