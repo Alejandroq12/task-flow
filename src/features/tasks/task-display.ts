@@ -20,7 +20,7 @@ export function groupTasksByStatus(tasks: ApiTask[]): BoardColumn[] {
   }))
 }
 
-const POINTS: Record<PointEstimate, number> = {
+export const POINTS: Record<PointEstimate, number> = {
   ZERO: 0,
   ONE: 1,
   TWO: 2,

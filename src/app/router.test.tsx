@@ -109,7 +109,7 @@ describe('dashboard main content', () => {
     renderAt('/')
     expect(screen.getByRole('img', { name: /grid view/i })).toBeInTheDocument()
     expect(screen.getByRole('img', { name: /list view/i })).toBeInTheDocument()
-    expect(screen.getAllByRole('img', { name: /add task/i }).length).toBeGreaterThan(0)
+    expect(screen.getAllByRole('button', { name: /add task/i }).length).toBeGreaterThan(0)
   })
 
   it('marks the correct mobile tab active per route', () => {
