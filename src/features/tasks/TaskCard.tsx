@@ -1,31 +1,25 @@
 import avatarUrl from '@/assets/avatar.png'
-import { AlarmIcon, DotsIcon } from '@/features/tasks/icons'
+import { AlarmIcon } from '@/features/tasks/icons'
 import {
   avatarSrc,
   dueInfo,
   pointsLabel,
   TAG_META,
-  type TagTone,
+  tagToneClasses,
 } from '@/features/tasks/task-display'
+import { TaskActions } from '@/features/tasks/TaskActions'
 import type { ApiTask } from '@/features/tasks/types'
-
-const tagToneClasses: Record<TagTone, string> = {
-  secondary: 'bg-secondary-4/10 text-secondary-4',
-  tertiary: 'bg-tertiary-4/10 text-tertiary-4',
-  neutral: 'bg-neutral-2/10 text-neutral-1',
-}
 
 export function TaskCard({ task }: { task: ApiTask }) {
   const due = dueInfo(task.dueDate)
+
   return (
     <article className="flex flex-col gap-4 rounded-lg bg-neutral-4 p-4">
       <div className="flex h-8 items-center gap-2">
         <h3 className="min-w-0 flex-1 truncate text-body-l font-semibold text-neutral-1">
           {task.name}
         </h3>
-        <span role="img" aria-label="Task options" className="shrink-0">
-          <DotsIcon className="size-6 text-neutral-1" />
-        </span>
+        <TaskActions task={task} />
       </div>
       <div className="flex items-center justify-between">
         <span className="text-body-m font-semibold text-neutral-1">

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import avatarUrl from '@/assets/avatar.png'
-import { BellIcon, SearchIcon } from '@/components/ui/icons'
+import { SearchIcon } from '@/components/ui/icons'
+import { NotificationsBell } from '@/components/layout/NotificationsBell'
 
 interface HeaderProps {
   sidebarOpen: boolean
@@ -34,10 +35,10 @@ export function Header({ sidebarOpen, onOpenSidebar }: HeaderProps) {
       />
       <div className="ml-auto flex items-center gap-3 lg:hidden">
         <SearchIcon className="size-6 text-neutral-2" />
-        <BellIcon className="size-6 text-neutral-2" />
+        <NotificationsBell />
       </div>
       <div className="hidden shrink-0 items-center gap-6 lg:flex">
-        <BellIcon className="size-6 text-neutral-2" />
+        <NotificationsBell />
         <img className="size-10 rounded-full" src={avatarUrl} alt="Profile" />
       </div>
     </header>

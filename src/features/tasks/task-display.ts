@@ -1,9 +1,9 @@
 import type { PointEstimate, Status, TaskTag } from '@/graphql/generated/graphql'
 import type { ApiTask, BoardColumn } from '@/features/tasks/types'
 
-export type TagTone = 'secondary' | 'tertiary' | 'neutral'
+type TagTone = 'secondary' | 'tertiary' | 'neutral'
 
-const STATUS_COLUMNS: { status: Status; title: string }[] = [
+export const STATUS_COLUMNS: { status: Status; title: string }[] = [
   { status: 'BACKLOG', title: 'Backlog' },
   { status: 'TODO', title: 'To Do' },
   { status: 'IN_PROGRESS', title: 'In Progress' },
@@ -16,7 +16,7 @@ export function groupTasksByStatus(tasks: ApiTask[]): BoardColumn[] {
     title,
     tasks: tasks
       .filter((task) => task.status === status)
-      .toSorted((a, b) => a.position - b.position),
+      .toSorted((a, b) => a.position - b.position || a.createdAt.localeCompare(b.createdAt)),
   }))
 }
 
@@ -29,7 +29,7 @@ export const POINTS: Record<PointEstimate, number> = {
 }
 
 export function pointsLabel(estimate: PointEstimate): string {
-  return `${String(POINTS[estimate])} Pts`
+  return `${String(POINTS[estimate])} Points`
 }
 
 export const TAG_META: Record<TaskTag, { label: string; tone: TagTone }> = {
@@ -40,19 +40,32 @@ export const TAG_META: Record<TaskTag, { label: string; tone: TagTone }> = {
   RAILS: { label: 'RAILS', tone: 'neutral' },
 }
 
-export function dueInfo(dueDate: string): { label: string; overdue: boolean } {
+export type DueTone = 'primary' | 'tertiary' | 'secondary'
+
+export function dueInfo(dueDate: string): { label: string; overdue: boolean; tone: DueTone } {
   const due = new Date(dueDate)
   const now = new Date()
   const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
   const dayDiff = Math.round((startOfDay(due) - startOfDay(now)) / 86_400_000)
-  if (dayDiff === 0) return { label: 'TODAY', overdue: false }
-  if (dayDiff === -1) return { label: 'YESTERDAY', overdue: true }
+  const overdue = dayDiff < 0
+  const tone: DueTone = overdue ? 'primary' : dayDiff <= 2 ? 'tertiary' : 'secondary'
+  if (dayDiff === 0) return { label: 'TODAY', overdue, tone }
+  if (dayDiff === -1) return { label: 'YESTERDAY', overdue, tone }
   const month = due.toLocaleString('en-US', { month: 'long' }).toUpperCase()
   return {
     label: `${String(due.getDate())} ${month}, ${String(due.getFullYear())}`,
-    overdue: dayDiff < 0,
+    overdue,
+    tone,
   }
 }
+
+export const tagToneClasses: Record<TagTone, string> = {
+  secondary: 'bg-secondary-4/10 text-secondary-4',
+  tertiary: 'bg-tertiary-4/10 text-tertiary-4',
+  neutral: 'bg-neutral-2/10 text-neutral-1',
+}
+
+export const dueDateToIso = (day: string) => new Date(`${day}T12:00:00Z`).toISOString()
 
 const LEGACY_DICEBEAR = /^https:\/\/avatars\.dicebear\.com\/api\/([^/]+)\/(.+)\.svg$/
 
