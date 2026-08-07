@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import avatarUrl from '@/assets/avatar.png'
 import { graphqlClient } from '@/lib/graphql-client'
@@ -50,15 +50,46 @@ export function CreateTaskModal({ onClose }: { onClose: () => void }) {
     },
   })
 
+  const containerRef = useRef<HTMLDivElement>(null)
+  const isPending = createTask.isPending
+
+  const dismiss = () => {
+    if (!isPending) onClose()
+  }
+
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') onClose()
+      if (event.key === 'Escape' && !isPending) onClose()
     }
     window.addEventListener('keydown', onKeyDown)
     return () => {
       window.removeEventListener('keydown', onKeyDown)
     }
-  }, [onClose])
+  }, [onClose, isPending])
+
+  useEffect(() => {
+    const previous = document.activeElement
+    return () => {
+      if (previous instanceof HTMLElement) previous.focus()
+    }
+  }, [])
+
+  const trapFocus = (event: React.KeyboardEvent) => {
+    if (event.key !== 'Tab' || containerRef.current === null) return
+    const focusables = [...containerRef.current.querySelectorAll<HTMLElement>('button, input')]
+      .filter((el) => el.tabIndex !== -1 && !el.hasAttribute('disabled'))
+      .filter((el) => el.getClientRects().length > 0)
+    const first = focusables.at(0)
+    const last = focusables.at(-1)
+    if (first === undefined || last === undefined) return
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault()
+      last.focus()
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault()
+      first.focus()
+    }
+  }
 
   const selectedAssignee = users.data?.users.find((user) => user.id === assigneeId)
   const canSubmit = name.trim().length > 0 && estimate !== null && dueDate !== ''
@@ -90,11 +121,15 @@ export function CreateTaskModal({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 lg:flex lg:items-start lg:justify-center lg:p-4 lg:pt-40">
+    <div
+      ref={containerRef}
+      onKeyDown={trapFocus}
+      className="fixed inset-0 z-50 lg:flex lg:items-start lg:justify-center lg:p-4 lg:pt-40"
+    >
       <button
         type="button"
         aria-label="Close create task"
-        onClick={onClose}
+        onClick={dismiss}
         className="absolute inset-0 hidden bg-neutral-5/75 lg:block"
       />
       <div
@@ -118,7 +153,7 @@ export function CreateTaskModal({ onClose }: { onClose: () => void }) {
           <button
             type="button"
             aria-label="Close create task"
-            onClick={onClose}
+            onClick={dismiss}
             className="flex size-10 items-center justify-center text-neutral-2"
           >
             <CloseIcon className="size-6" />
@@ -343,7 +378,7 @@ export function CreateTaskModal({ onClose }: { onClose: () => void }) {
         <div className="hidden items-center gap-6 self-end lg:flex">
           <button
             type="button"
-            onClick={onClose}
+            onClick={dismiss}
             className="rounded-lg p-2 text-body-m text-neutral-1"
           >
             Cancel
