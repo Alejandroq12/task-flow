@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useSearchParams } from 'react-router'
 import { useProfile } from '@/lib/profile'
 import { QueryErrorAlert } from '@/components/ui/QueryErrorAlert'
@@ -6,10 +5,10 @@ import { Toolbar } from '@/features/tasks/Toolbar'
 import { FilterBar } from '@/features/tasks/FilterBar'
 import { TasksView } from '@/features/tasks/TasksView'
 import { filterInputFromParams, hasActiveFilters } from '@/features/tasks/filter-params'
-import type { BoardLayout } from '@/features/tasks/types'
+import { useViewLayout } from '@/components/layout/view-layout'
 
 export function MyTask() {
-  const [layout, setLayout] = useState<BoardLayout>('list')
+  const { layout, setLayout } = useViewLayout()
   const [searchParams] = useSearchParams()
   const profile = useProfile()
 

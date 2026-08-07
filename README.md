@@ -112,7 +112,7 @@ src/
 - [x] Create task — the + buttons open a Figma-matched modal (full-screen page on mobile, floating panel on desktop) with custom estimate/assignee/tag menus and per-breakpoint date pickers; createTask + cache invalidation + error handling
 - [x] Update task — Edit via the card/list options menu, reusing the shared TaskForm with all six required editable fields (name, due date, position, status, tags, estimate) plus assignee; success/failure notifications
 - [x] Delete task — 'Delete Task?' confirmation via the options menu, deleteTask by id, success/failure notifications
-- [x] View toggle & My Task — grid/list layouts on both views (list = the mockup's grouped table with due-date row indicators); My Task filters to tasks assigned to the logged-in user via the profile query
+- [x] View toggle & My Task — grid/list layouts on both views (list = the mockup's grouped table with due-date row indicators), switched by the toolbar icons on desktop and by the Dashboard/Task tabs on mobile; My Task filters to tasks assigned to the logged-in user via the profile query
 - [x] Search & filter — the header search and five filter chips (status, estimate, tags, due date, owner) live in URL search params, combine freely, and show a dedicated empty-results state when nothing matches
 - [x] User settings page — reached from a Settings sidebar item (built from the design system's own abstract SidebarItem component) and by clicking the header avatar; /settings renders the profile query (full name, email, type chip, created/updated dates) in an invented card design built from the app's own tokens; the requirement's Position field does not exist on the API's User type (verified by introspection), so the row states that instead of fabricating a value
 

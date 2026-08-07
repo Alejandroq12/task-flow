@@ -5,7 +5,7 @@ import { TaskBoard } from '@/features/tasks/TaskBoard'
 import { TaskList } from '@/features/tasks/TaskList'
 import { QueryErrorAlert } from '@/components/ui/QueryErrorAlert'
 import { groupTasksByStatus } from '@/features/tasks/task-display'
-import type { BoardLayout } from '@/features/tasks/types'
+import type { BoardLayout } from '@/components/layout/view-layout'
 import type { FilterTaskInput } from '@/graphql/generated/graphql'
 
 function TaskBoardSkeleton() {
