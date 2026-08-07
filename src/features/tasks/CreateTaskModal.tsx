@@ -51,6 +51,7 @@ export function CreateTaskModal({ onClose }: { onClose: () => void }) {
   })
 
   const containerRef = useRef<HTMLDivElement>(null)
+  const [opener] = useState(() => document.activeElement)
   const isPending = createTask.isPending
 
   const dismiss = () => {
@@ -68,11 +69,10 @@ export function CreateTaskModal({ onClose }: { onClose: () => void }) {
   }, [onClose, isPending])
 
   useEffect(() => {
-    const previous = document.activeElement
     return () => {
-      if (previous instanceof HTMLElement) previous.focus()
+      if (opener instanceof HTMLElement) opener.focus()
     }
-  }, [])
+  }, [opener])
 
   const trapFocus = (event: React.KeyboardEvent) => {
     if (event.key !== 'Tab' || containerRef.current === null) return
@@ -129,6 +129,7 @@ export function CreateTaskModal({ onClose }: { onClose: () => void }) {
       <button
         type="button"
         aria-label="Close create task"
+        tabIndex={-1}
         onClick={dismiss}
         className="absolute inset-0 hidden bg-neutral-5/75 lg:block"
       />
