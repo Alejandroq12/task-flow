@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
@@ -11,8 +11,14 @@ vi.mock('@/lib/graphql-client', () => ({
 }))
 
 beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date('2026-08-06T12:00:00Z'))
   tasksRequestMock().mockReset()
   tasksRequestMock().mockResolvedValue({ tasks: makeFixtureTasks() })
+})
+
+afterEach(() => {
+  vi.useRealTimers()
 })
 
 // Fresh QueryClient per test: no cache leaks between tests, no retries
