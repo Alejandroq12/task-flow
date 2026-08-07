@@ -3,47 +3,62 @@ import { useLocation } from 'react-router'
 import { GridIcon, ListIcon } from '@/components/ui/icons'
 import { PlusIcon } from '@/features/tasks/icons'
 import { CreateTaskModal } from '@/features/tasks/CreateTaskModal'
+import type { BoardLayout } from '@/features/tasks/types'
 
-export function Toolbar() {
+interface ToolbarProps {
+  layout: BoardLayout
+  onLayoutChange: (layout: BoardLayout) => void
+}
+
+export function Toolbar({ layout, onLayoutChange }: ToolbarProps) {
   const { pathname } = useLocation()
   const [createOpen, setCreateOpen] = useState(false)
   const onMyTask = pathname === '/my-task'
   return (
     <div>
       <div className="-mx-4 flex lg:hidden">
-        <div className="flex flex-1 flex-col">
-          <span
-            className={`w-full pt-3 pb-2 text-center text-body-s ${onMyTask ? 'text-neutral-2' : 'text-primary-4'}`}
-          >
-            Dashboard
-          </span>
-          <span className={`h-0.5 w-full ${onMyTask ? 'bg-transparent' : 'bg-primary-4'}`} />
-        </div>
-        <div className="flex flex-1 flex-col">
-          <span
-            className={`w-full pt-3 pb-2 text-center text-body-s ${onMyTask ? 'text-primary-4' : 'text-neutral-2'}`}
-          >
-            Task
-          </span>
-          <span className={`h-0.5 w-full ${onMyTask ? 'bg-primary-4' : 'bg-transparent'}`} />
-        </div>
+        {[
+          { label: 'Dashboard', active: !onMyTask },
+          { label: 'Task', active: onMyTask },
+        ].map((tab) => (
+          <div key={tab.label} className="flex flex-1 flex-col">
+            <span
+              className={`w-full pt-3 pb-2 text-center text-body-s ${tab.active ? 'text-primary-4' : 'text-neutral-2'}`}
+            >
+              {tab.label}
+            </span>
+            <span className={`h-0.5 w-full ${tab.active ? 'bg-primary-4' : 'bg-transparent'}`} />
+          </div>
+        ))}
       </div>
       <div className="hidden items-center justify-between py-1 lg:flex">
         <div className="flex h-10 w-20 rounded-lg bg-neutral-5">
-          <span
-            role="img"
+          <button
+            type="button"
             aria-label="List view"
-            className="flex size-10 items-center justify-center"
+            aria-pressed={layout === 'list'}
+            onClick={() => {
+              onLayoutChange('list')
+            }}
+            className={`flex size-10 items-center justify-center rounded-lg ${
+              layout === 'list' ? 'border border-primary-4 text-primary-4' : 'text-neutral-1'
+            }`}
           >
-            <ListIcon className="size-6 text-neutral-1" />
-          </span>
-          <span
-            role="img"
+            <ListIcon className="size-6" />
+          </button>
+          <button
+            type="button"
             aria-label="Grid view"
-            className="flex size-10 items-center justify-center rounded-lg border border-primary-4"
+            aria-pressed={layout === 'grid'}
+            onClick={() => {
+              onLayoutChange('grid')
+            }}
+            className={`flex size-10 items-center justify-center rounded-lg ${
+              layout === 'grid' ? 'border border-primary-4 text-primary-4' : 'text-neutral-1'
+            }`}
           >
-            <GridIcon className="size-6 text-primary-4" />
-          </span>
+            <GridIcon className="size-6" />
+          </button>
         </div>
         <button
           type="button"

@@ -8,6 +8,7 @@ export const TasksDocument = graphql(`
       dueDate
       pointEstimate
       position
+      createdAt
       status
       tags
       assignee {
@@ -44,6 +45,47 @@ export const UsersDocument = graphql(`
       id
       fullName
       avatar
+    }
+  }
+`)
+
+export const UpdateTaskDocument = graphql(`
+  mutation UpdateTask($input: UpdateTaskInput!) {
+    updateTask(input: $input) {
+      id
+      name
+      dueDate
+      pointEstimate
+      position
+      status
+      tags
+      assignee {
+        id
+        fullName
+        avatar
+      }
+    }
+  }
+`)
+
+export const DeleteTaskDocument = graphql(`
+  mutation DeleteTask($input: DeleteTaskInput!) {
+    deleteTask(input: $input) {
+      id
+    }
+  }
+`)
+
+export const ProfileDocument = graphql(`
+  query Profile {
+    profile {
+      id
+      fullName
+      email
+      type
+      avatar
+      createdAt
+      updatedAt
     }
   }
 `)

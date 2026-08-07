@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, type ComponentType } from 'react'
 import {
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -6,13 +6,30 @@ import {
   ChevronsRightIcon,
   ChevronThinRightIcon,
 } from '@/features/tasks/icons'
+import type { IconProps } from '@/components/ui/icons'
 
 const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+const DIALOG_WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 
 const toIso = (date: Date) =>
   `${String(date.getFullYear())}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
     date.getDate(),
   ).padStart(2, '0')}`
+
+function useMonthView(value: string) {
+  const today = new Date()
+  const initial = value === '' ? today : new Date(`${value}T12:00:00`)
+  const [viewYear, setViewYear] = useState(initial.getFullYear())
+  const [viewMonth, setViewMonth] = useState(initial.getMonth())
+
+  const moveView = (deltaMonths: number) => {
+    const next = new Date(viewYear, viewMonth + deltaMonths, 1)
+    setViewYear(next.getFullYear())
+    setViewMonth(next.getMonth())
+  }
+
+  return { today, initial, viewYear, viewMonth, moveView }
+}
 
 const dayTone = (selected: boolean, isToday: boolean, inMonth: boolean) => {
   if (selected) return 'bg-primary-4 text-neutral-1'
@@ -25,17 +42,33 @@ interface DatePickerProps {
   onSelect: (iso: string) => void
 }
 
-export function DatePicker({ value, onSelect }: DatePickerProps) {
-  const today = new Date()
-  const initial = value === '' ? today : new Date(`${value}T12:00:00`)
-  const [viewYear, setViewYear] = useState(initial.getFullYear())
-  const [viewMonth, setViewMonth] = useState(initial.getMonth())
+function NavButton({
+  label,
+  delta,
+  Icon,
+  onNav,
+}: {
+  label: string
+  delta: number
+  Icon: ComponentType<IconProps>
+  onNav: (delta: number) => void
+}) {
+  return (
+    <button
+      type="button"
+      aria-label={label}
+      onClick={() => {
+        onNav(delta)
+      }}
+      className="flex size-4 items-center justify-center text-neutral-1"
+    >
+      <Icon className="size-4" />
+    </button>
+  )
+}
 
-  const moveView = (deltaMonths: number) => {
-    const next = new Date(viewYear, viewMonth + deltaMonths, 1)
-    setViewYear(next.getFullYear())
-    setViewMonth(next.getMonth())
-  }
+export function DatePicker({ value, onSelect }: DatePickerProps) {
+  const { today, viewYear, viewMonth, moveView } = useMonthView(value)
 
   const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleDateString('en-US', {
     month: 'short',
@@ -55,49 +88,13 @@ export function DatePicker({ value, onSelect }: DatePickerProps) {
     >
       <div className="flex w-full items-center justify-between px-2 py-2.25">
         <div className="flex items-center gap-1">
-          <button
-            type="button"
-            aria-label="Previous year"
-            onClick={() => {
-              moveView(-12)
-            }}
-            className="flex size-4 items-center justify-center text-neutral-1"
-          >
-            <ChevronsLeftIcon className="size-4" />
-          </button>
-          <button
-            type="button"
-            aria-label="Previous month"
-            onClick={() => {
-              moveView(-1)
-            }}
-            className="flex size-4 items-center justify-center text-neutral-1"
-          >
-            <ChevronLeftIcon className="size-4" />
-          </button>
+          <NavButton label="Previous year" delta={-12} Icon={ChevronsLeftIcon} onNav={moveView} />
+          <NavButton label="Previous month" delta={-1} Icon={ChevronLeftIcon} onNav={moveView} />
         </div>
         <span className="text-picker font-semibold text-neutral-1">{monthLabel}</span>
         <div className="flex items-center gap-1">
-          <button
-            type="button"
-            aria-label="Next month"
-            onClick={() => {
-              moveView(1)
-            }}
-            className="flex size-4 items-center justify-center text-neutral-1"
-          >
-            <ChevronRightIcon className="size-4" />
-          </button>
-          <button
-            type="button"
-            aria-label="Next year"
-            onClick={() => {
-              moveView(12)
-            }}
-            className="flex size-4 items-center justify-center text-neutral-1"
-          >
-            <ChevronsRightIcon className="size-4" />
-          </button>
+          <NavButton label="Next month" delta={1} Icon={ChevronRightIcon} onNav={moveView} />
+          <NavButton label="Next year" delta={12} Icon={ChevronsRightIcon} onNav={moveView} />
         </div>
       </div>
       <div className="h-px w-full bg-neutral-2" />
@@ -151,8 +148,6 @@ export function DatePicker({ value, onSelect }: DatePickerProps) {
   )
 }
 
-const DIALOG_WEEKDAYS = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-
 const dialogDayTone = (selected: boolean, isToday: boolean) => {
   if (selected) return 'bg-primary-4'
   if (isToday) return 'border-2 border-primary-3'
@@ -166,17 +161,8 @@ interface DatePickerDialogProps {
 }
 
 export function DatePickerDialog({ value, onCancel, onConfirm }: DatePickerDialogProps) {
-  const today = new Date()
-  const initial = value === '' ? today : new Date(`${value}T12:00:00`)
+  const { today, initial, viewYear, viewMonth, moveView } = useMonthView(value)
   const [pending, setPending] = useState(toIso(initial))
-  const [viewYear, setViewYear] = useState(initial.getFullYear())
-  const [viewMonth, setViewMonth] = useState(initial.getMonth())
-
-  const moveView = (deltaMonths: number) => {
-    const next = new Date(viewYear, viewMonth + deltaMonths, 1)
-    setViewYear(next.getFullYear())
-    setViewMonth(next.getMonth())
-  }
 
   const pendingDate = new Date(`${pending}T12:00:00`)
   const headline = pendingDate.toLocaleDateString('en-US', {
@@ -194,18 +180,14 @@ export function DatePickerDialog({ value, onCancel, onConfirm }: DatePickerDialo
   const todayIso = toIso(today)
 
   return (
-    <div
-      role="group"
-      aria-label="Choose due date"
-      className="flex w-80 flex-col border border-neutral-2 bg-neutral-5"
-    >
+    <div role="group" aria-label="Choose due date" className="flex w-80 flex-col bg-neutral-5">
       <div className="flex w-full flex-col bg-primary-4 px-8 py-4">
         <span className="text-body-s leading-6 font-bold text-primary-1">
           {pendingDate.getFullYear()}
         </span>
         <span className="text-date-display font-bold text-neutral-1">{headline}</span>
       </div>
-      <div className="flex w-full flex-col items-center p-6">
+      <div className="flex w-full flex-col items-center border-x border-b border-neutral-2 px-5 py-6">
         <div className="flex w-full items-center">
           <button
             type="button"
@@ -268,7 +250,7 @@ export function DatePickerDialog({ value, onCancel, onConfirm }: DatePickerDialo
             })}
           </div>
         ))}
-        <div className="flex w-full items-center justify-end gap-2.5 pt-2">
+        <div className="flex w-full items-center justify-end gap-2.5 px-1 pt-2">
           <button
             type="button"
             onClick={onCancel}

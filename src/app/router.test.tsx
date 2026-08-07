@@ -4,7 +4,9 @@ import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { routes } from '@/app/router'
-import { makeFixtureTasks, tasksRequestMock } from '@/test/fixtures'
+import { NotificationsProvider } from '@/components/ui/notifications'
+import { makeFixtureProfile, makeFixtureTasks, tasksRequestMock } from '@/test/fixtures'
+import { ProfileDocument } from '@/features/tasks/queries'
 
 vi.mock('@/lib/graphql-client', () => ({
   graphqlClient: { request: vi.fn() },
@@ -14,7 +16,11 @@ beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(new Date('2026-08-06T12:00:00Z'))
   tasksRequestMock().mockReset()
-  tasksRequestMock().mockResolvedValue({ tasks: makeFixtureTasks() })
+  tasksRequestMock().mockImplementation((document: unknown) =>
+    document === ProfileDocument
+      ? Promise.resolve({ profile: makeFixtureProfile() })
+      : Promise.resolve({ tasks: makeFixtureTasks() }),
+  )
 })
 
 afterEach(() => {
@@ -30,7 +36,9 @@ function renderAt(path: string) {
   const router = createMemoryRouter(routes, { initialEntries: [path] })
   return render(
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <NotificationsProvider>
+        <RouterProvider router={router} />
+      </NotificationsProvider>
     </QueryClientProvider>,
   )
 }
@@ -98,17 +106,17 @@ describe('dashboard main content', () => {
     )
     if (!card) throw new Error('expected the Twitter card to render inside an <article>')
     const scoped = within(card)
-    expect(scoped.getByText(/8 pts/i)).toBeInTheDocument()
+    expect(scoped.getByText(/8 points/i)).toBeInTheDocument()
     expect(scoped.getByText(/yesterday/i)).toBeInTheDocument()
     expect(scoped.getByText('REACT')).toBeInTheDocument()
     expect(scoped.getByRole('img', { name: /unassigned/i })).toBeInTheDocument()
-    expect(scoped.getByRole('img', { name: /task options/i })).toBeInTheDocument()
+    expect(scoped.getByRole('button', { name: /task options/i })).toBeInTheDocument()
   })
 
   it('renders the toolbar view icons and the add-task affordance', () => {
     renderAt('/')
-    expect(screen.getByRole('img', { name: /grid view/i })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: /list view/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /grid view/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /list view/i })).toBeInTheDocument()
     expect(screen.getAllByRole('button', { name: /add task/i }).length).toBeGreaterThan(0)
   })
 
