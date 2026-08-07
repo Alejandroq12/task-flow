@@ -8,6 +8,14 @@ const ESTIMATES = new Set<string>(Object.keys(POINTS))
 const TAGS = new Set<string>(Object.keys(TAG_META))
 const DAY_PATTERN = /^\d{4}-\d{2}-\d{2}$/
 
+export function parseDueParam(params: URLSearchParams): string | null {
+  const due = params.get('due')
+  if (due === null || !DAY_PATTERN.test(due)) return null
+  const date = new Date(`${due}T12:00:00Z`)
+  if (Number.isNaN(date.getTime())) return null
+  return date.toISOString().slice(0, 10) === due ? due : null
+}
+
 export function filterInputFromParams(params: URLSearchParams): FilterTaskInput {
   const input: FilterTaskInput = {}
   const q = params.get('q')
@@ -21,8 +29,8 @@ export function filterInputFromParams(params: URLSearchParams): FilterTaskInput 
     ?.split(',')
     .filter((tag) => TAGS.has(tag)) as TaskTag[] | undefined
   if (tags !== undefined && tags.length > 0) input.tags = tags
-  const due = params.get('due')
-  if (due !== null && DAY_PATTERN.test(due)) input.dueDate = dueDateToIso(due)
+  const due = parseDueParam(params)
+  if (due !== null) input.dueDate = dueDateToIso(due)
   const owner = params.get('owner')
   if (owner !== null && owner !== '') input.ownerId = owner
   return input

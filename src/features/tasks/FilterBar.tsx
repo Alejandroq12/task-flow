@@ -7,7 +7,7 @@ import { UsersDocument } from '@/features/tasks/queries'
 import { MenuPanel } from '@/features/tasks/MenuPanel'
 import { DatePicker, DatePickerDialog } from '@/features/tasks/DatePicker'
 import { avatarSrc, POINTS, STATUS_COLUMNS, TAG_META } from '@/features/tasks/task-display'
-import { FILTER_PARAM_KEYS, hasActiveFilters } from '@/features/tasks/filter-params'
+import { FILTER_PARAM_KEYS, hasActiveFilters, parseDueParam } from '@/features/tasks/filter-params'
 import type { PointEstimate, TaskTag } from '@/graphql/generated/graphql'
 
 const ESTIMATES = Object.keys(POINTS) as PointEstimate[]
@@ -57,7 +57,7 @@ export function FilterBar() {
   const selectedTags = (searchParams.get('tags')?.split(',') ?? []).filter((tag): tag is TaskTag =>
     ALL_TAGS.includes(tag as TaskTag),
   )
-  const due = searchParams.get('due')
+  const due = parseDueParam(searchParams)
   const owner = searchParams.get('owner')
   const ownerName = users.data?.users.find((user) => user.id === owner)?.fullName
 

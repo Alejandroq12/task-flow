@@ -11,6 +11,9 @@ export const TasksDocument = graphql(`
       createdAt
       status
       tags
+      creator {
+        id
+      }
       assignee {
         id
         fullName

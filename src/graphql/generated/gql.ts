@@ -14,7 +14,7 @@ import type { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-
  * Learn more about it here: https://the-guild.dev/graphql/codegen/plugins/presets/preset-client#reducing-bundle-size
  */
 type Documents = {
-    "\n  query Tasks($input: FilterTaskInput!) {\n    tasks(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      createdAt\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n": typeof types.TasksDocument,
+    "\n  query Tasks($input: FilterTaskInput!) {\n    tasks(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      createdAt\n      status\n      tags\n      creator {\n        id\n      }\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n": typeof types.TasksDocument,
     "\n  mutation CreateTask($input: CreateTaskInput!) {\n    createTask(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n": typeof types.CreateTaskDocument,
     "\n  query Users {\n    users {\n      id\n      fullName\n      avatar\n    }\n  }\n": typeof types.UsersDocument,
     "\n  mutation UpdateTask($input: UpdateTaskInput!) {\n    updateTask(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n": typeof types.UpdateTaskDocument,
@@ -22,7 +22,7 @@ type Documents = {
     "\n  query Profile {\n    profile {\n      id\n      fullName\n      email\n      type\n      avatar\n      createdAt\n      updatedAt\n    }\n  }\n": typeof types.ProfileDocument,
 };
 const documents: Documents = {
-    "\n  query Tasks($input: FilterTaskInput!) {\n    tasks(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      createdAt\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n": types.TasksDocument,
+    "\n  query Tasks($input: FilterTaskInput!) {\n    tasks(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      createdAt\n      status\n      tags\n      creator {\n        id\n      }\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n": types.TasksDocument,
     "\n  mutation CreateTask($input: CreateTaskInput!) {\n    createTask(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n": types.CreateTaskDocument,
     "\n  query Users {\n    users {\n      id\n      fullName\n      avatar\n    }\n  }\n": types.UsersDocument,
     "\n  mutation UpdateTask($input: UpdateTaskInput!) {\n    updateTask(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n": types.UpdateTaskDocument,
@@ -47,7 +47,7 @@ export function graphql(source: string): unknown;
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function graphql(source: "\n  query Tasks($input: FilterTaskInput!) {\n    tasks(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      createdAt\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n"): (typeof documents)["\n  query Tasks($input: FilterTaskInput!) {\n    tasks(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      createdAt\n      status\n      tags\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n"];
+export function graphql(source: "\n  query Tasks($input: FilterTaskInput!) {\n    tasks(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      createdAt\n      status\n      tags\n      creator {\n        id\n      }\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n"): (typeof documents)["\n  query Tasks($input: FilterTaskInput!) {\n    tasks(input: $input) {\n      id\n      name\n      dueDate\n      pointEstimate\n      position\n      createdAt\n      status\n      tags\n      creator {\n        id\n      }\n      assignee {\n        id\n        fullName\n        avatar\n      }\n    }\n  }\n"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */

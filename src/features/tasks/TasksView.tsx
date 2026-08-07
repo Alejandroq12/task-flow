@@ -52,7 +52,12 @@ export function TasksView({ input = {}, layout = 'grid', filtered = false }: Tas
     )
   }
 
-  if (data.tasks.length === 0) {
+  const tasks =
+    input.ownerId !== undefined && input.ownerId !== null
+      ? data.tasks.filter((task) => task.creator.id === input.ownerId)
+      : data.tasks
+
+  if (tasks.length === 0) {
     return (
       <div className="flex flex-col items-start gap-2 p-4">
         <p className="text-body-l font-semibold text-neutral-1">
@@ -67,6 +72,6 @@ export function TasksView({ input = {}, layout = 'grid', filtered = false }: Tas
     )
   }
 
-  const columns = groupTasksByStatus(data.tasks)
+  const columns = groupTasksByStatus(tasks)
   return layout === 'grid' ? <TaskBoard columns={columns} /> : <TaskList columns={columns} />
 }
