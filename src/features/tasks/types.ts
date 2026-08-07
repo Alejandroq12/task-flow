@@ -1,17 +1,8 @@
-export type TagTone = 'secondary' | 'tertiary'
+import type { TasksQuery } from '@/graphql/generated/graphql'
 
-export interface Task {
-  id: string
-  name: string
-  points: number
-  dueLabel: string
-  overdue?: boolean
-  forks: number
-  comments: number
-  tags: { label: string; tone: TagTone }[]
-}
+export type ApiTask = TasksQuery['tasks'][number]
 
 export interface BoardColumn {
   title: string
-  tasks: Task[]
+  tasks: ApiTask[]
 }

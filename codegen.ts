@@ -27,7 +27,7 @@ const config: CodegenConfig = {
     './src/graphql/generated/': {
       preset: 'client',
       // Required by verbatimModuleSyntax: emit `import type` for type-only symbols.
-      config: { useTypeImports: true },
+      config: { useTypeImports: true, scalars: { DateTime: 'string' } },
     },
   },
 }

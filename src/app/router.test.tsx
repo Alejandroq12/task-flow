@@ -1,9 +1,25 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { routes } from '@/app/router'
+import { makeFixtureTasks, tasksRequestMock } from '@/test/fixtures'
+
+vi.mock('@/lib/graphql-client', () => ({
+  graphqlClient: { request: vi.fn() },
+}))
+
+beforeEach(() => {
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date('2026-08-06T12:00:00Z'))
+  tasksRequestMock().mockReset()
+  tasksRequestMock().mockResolvedValue({ tasks: makeFixtureTasks() })
+})
+
+afterEach(() => {
+  vi.useRealTimers()
+})
 
 // Fresh QueryClient per test: no cache leaks between tests, no retries
 // slowing failure cases down.
@@ -64,25 +80,28 @@ describe('sidebar navigation', () => {
 })
 
 describe('dashboard main content', () => {
-  it('renders the five required status columns', () => {
+  it('renders the five required status columns with fetched tasks', async () => {
     renderAt('/')
-    for (const title of ['Backlog', 'To Do', 'In Progress', 'Done', 'Cancelled']) {
+    expect(await screen.findByRole('heading', { level: 2, name: /backlog/i })).toBeInTheDocument()
+    for (const title of ['To Do', 'In Progress', 'Done', 'Cancelled']) {
       expect(
         screen.getByRole('heading', { level: 2, name: new RegExp(title, 'i') }),
       ).toBeInTheDocument()
     }
+    expect(screen.getByRole('heading', { level: 3, name: /slack/i })).toBeInTheDocument()
   })
 
-  it('renders a task card with its required fields', () => {
+  it('renders a task card with its required fields', async () => {
     renderAt('/')
-    const card = screen.getByRole('heading', { level: 3, name: /twitter/i }).closest('article')
+    const card = (await screen.findByRole('heading', { level: 3, name: /twitter/i })).closest(
+      'article',
+    )
     if (!card) throw new Error('expected the Twitter card to render inside an <article>')
     const scoped = within(card)
-    expect(scoped.getByText(/3 pts/i)).toBeInTheDocument()
+    expect(scoped.getByText(/8 pts/i)).toBeInTheDocument()
     expect(scoped.getByText(/yesterday/i)).toBeInTheDocument()
-    expect(scoped.getByText(/ios app/i)).toBeInTheDocument()
-    expect(scoped.getByText(/android/i)).toBeInTheDocument()
-    expect(scoped.getByRole('img', { name: /assignee/i })).toBeInTheDocument()
+    expect(scoped.getByText('REACT')).toBeInTheDocument()
+    expect(scoped.getByRole('img', { name: /unassigned/i })).toBeInTheDocument()
     expect(scoped.getByRole('img', { name: /task options/i })).toBeInTheDocument()
   })
 
@@ -100,6 +119,27 @@ describe('dashboard main content', () => {
     if (!tabs) throw new Error('expected the mobile tabs container to exist')
     expect(taskTab).toHaveClass('text-primary-4')
     expect(within(tabs).getByText('Dashboard')).toHaveClass('text-neutral-2')
+  })
+})
+
+describe('tasks query states', () => {
+  it('shows a loading indicator while fetching', () => {
+    tasksRequestMock().mockImplementation(() => new Promise(() => undefined))
+    renderAt('/')
+    expect(screen.getByRole('status')).toHaveTextContent(/loading tasks/i)
+  })
+
+  it('indicates when the query has failed and offers a retry', async () => {
+    tasksRequestMock().mockRejectedValue(new Error('network down'))
+    renderAt('/')
+    expect(await screen.findByRole('alert')).toHaveTextContent(/something went wrong/i)
+    expect(screen.getByRole('button', { name: /try again/i })).toBeInTheDocument()
+  })
+
+  it('shows an empty state when there are no results', async () => {
+    tasksRequestMock().mockResolvedValue({ tasks: [] })
+    renderAt('/')
+    expect(await screen.findByText(/no tasks found/i)).toBeInTheDocument()
   })
 })
 
