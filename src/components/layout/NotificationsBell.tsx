@@ -13,11 +13,15 @@ export function NotificationsBell() {
   }
 
   return (
-    <div className="relative">
+    <div
+      className="relative"
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') setOpen(false)
+      }}
+    >
       <button
         type="button"
         aria-label="Notifications"
-        aria-haspopup="true"
         aria-expanded={open}
         onClick={toggle}
         className="relative flex size-8 items-center justify-center text-neutral-2"

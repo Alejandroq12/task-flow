@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import avatarUrl from '@/assets/avatar.png'
 import { graphqlClient } from '@/lib/graphql-client'
 import { UsersDocument } from '@/features/tasks/queries'
+import { useDialogFocus } from '@/components/ui/use-dialog-focus'
 import { avatarSrc, POINTS, STATUS_COLUMNS, TAG_META } from '@/features/tasks/task-display'
 import { DatePicker, DatePickerDialog } from '@/features/tasks/DatePicker'
 import {
@@ -98,8 +99,6 @@ export function TaskForm({
   const [position, setPosition] = useState(initialValues.position)
   const [openMenu, setOpenMenu] = useState<MenuName>(null)
   const [showValidation, setShowValidation] = useState(false)
-  const containerRef = useRef<HTMLDivElement>(null)
-  const [opener] = useState(() => document.activeElement)
 
   const users = useQuery({
     queryKey: ['users'],
@@ -110,38 +109,13 @@ export function TaskForm({
     if (!isPending) onClose()
   }
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !isPending) onClose()
+  const { containerRef, trapFocus } = useDialogFocus(() => {
+    if (openMenu !== null) {
+      setOpenMenu(null)
+      return
     }
-    window.addEventListener('keydown', onKeyDown)
-    return () => {
-      window.removeEventListener('keydown', onKeyDown)
-    }
-  }, [onClose, isPending])
-
-  useEffect(() => {
-    return () => {
-      if (opener instanceof HTMLElement) opener.focus()
-    }
-  }, [opener])
-
-  const trapFocus = (event: React.KeyboardEvent) => {
-    if (event.key !== 'Tab' || containerRef.current === null) return
-    const focusables = [...containerRef.current.querySelectorAll<HTMLElement>('button, input')]
-      .filter((el) => el.tabIndex !== -1 && !el.hasAttribute('disabled'))
-      .filter((el) => el.getClientRects().length > 0)
-    const first = focusables.at(0)
-    const last = focusables.at(-1)
-    if (first === undefined || last === undefined) return
-    if (event.shiftKey && document.activeElement === first) {
-      event.preventDefault()
-      last.focus()
-    } else if (!event.shiftKey && document.activeElement === last) {
-      event.preventDefault()
-      first.focus()
-    }
-  }
+    dismiss()
+  })
 
   const selectedAssignee = users.data?.users.find((user) => user.id === assigneeId)
   const statusTitle = STATUS_COLUMNS.find((column) => column.status === status)?.title ?? status
@@ -342,6 +316,12 @@ export function TaskForm({
             </button>
             {openMenu === 'assignee' && (
               <MenuPanel title="Assign To..." className="max-h-80 w-60 overflow-y-auto">
+                {users.isPending && (
+                  <p className="px-4 py-2 text-body-m text-neutral-2">Loading users…</p>
+                )}
+                {users.isError && (
+                  <p className="px-4 py-2 text-body-m text-primary-4">Could not load users.</p>
+                )}
                 {(users.data?.users ?? []).map((user) => (
                   <button
                     key={user.id}

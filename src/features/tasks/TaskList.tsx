@@ -1,5 +1,6 @@
 import avatarUrl from '@/assets/avatar.png'
 import { CaretDownIcon } from '@/features/tasks/icons'
+import { TaskActions } from '@/features/tasks/TaskActions'
 import {
   avatarSrc,
   dueInfo,
@@ -22,13 +23,15 @@ const tagsWidth = 'w-42 shrink-0'
 const estimateWidth = 'w-35 shrink-0'
 const assigneeWidth = 'w-42 shrink-0'
 const dueWidth = 'w-33 shrink-0'
+const actionsWidth = 'w-14 shrink-0'
 
 const HEADERS = [
   { label: '# Task Name', className: `${nameWidth} rounded-l px-4` },
   { label: 'Task Tags', className: `${tagsWidth} pr-4 pl-4` },
   { label: 'Estimate', className: `${estimateWidth} pr-4 pl-4` },
   { label: 'Task Assign Name', className: `${assigneeWidth} pr-4 pl-4` },
-  { label: 'Due Date', className: `${dueWidth} rounded-r pr-4 pl-4` },
+  { label: 'Due Date', className: `${dueWidth} pr-4 pl-4` },
+  { label: '', className: `${actionsWidth} rounded-r` },
 ]
 
 const titleCase = (label: string) => label.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase())
@@ -78,6 +81,9 @@ function TaskRow({ task, index }: { task: ApiTask; index: number }) {
           {titleCase(due.label)}
         </span>
       </div>
+      <div className={`${cellBase} ${actionsWidth} justify-center`}>
+        <TaskActions task={task} />
+      </div>
     </div>
   )
 }
@@ -85,11 +91,11 @@ function TaskRow({ task, index }: { task: ApiTask; index: number }) {
 export function TaskList({ columns }: { columns: BoardColumn[] }) {
   return (
     <div className="min-h-0 flex-1 overflow-auto">
-      <div className="flex min-w-225 flex-col gap-4">
+      <div className="flex min-w-239 flex-col gap-4">
         <div className="flex">
-          {HEADERS.map((header) => (
+          {HEADERS.map((header, index) => (
             <div
-              key={header.label}
+              key={index}
               className={`${cellBase} ${header.className} text-body-m text-neutral-1`}
             >
               {header.label}

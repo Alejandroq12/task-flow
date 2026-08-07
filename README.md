@@ -109,9 +109,10 @@ src/
 - [x] Initial setup (folder structure, routing, styles solution, linting/formatting, error boundary, tests, CI)
 - [x] Dashboard UI (static): sidebar with mobile drawer, header, toolbar, five status columns, task cards
 - [x] API connection — fetch tasks into their status columns, with loading skeleton, failure alert + retry, and empty state
-- [ ] Create task
-- [ ] Update task
-- [ ] Delete task
+- [x] Create task — the + buttons open a Figma-matched modal (full-screen page on mobile, floating panel on desktop) with custom estimate/assignee/tag menus and per-breakpoint date pickers; createTask + cache invalidation + error handling
+- [x] Update task — Edit via the card/list options menu, reusing the shared TaskForm with all six required editable fields (name, due date, position, status, tags, estimate) plus assignee; success/failure notifications
+- [x] Delete task — 'Delete Task?' confirmation via the options menu, deleteTask by id, success/failure notifications
+- [x] View toggle & My Task — grid/list layouts on both views (list = the mockup's grouped table with due-date row indicators); My Task filters to tasks assigned to the logged-in user via the profile query
 - [ ] Search & filter
 - [ ] User settings page
 
@@ -125,6 +126,7 @@ src/
 - **Quality gates are CI-enforced, not hook-enforced.** There are deliberately no git hooks (husky/lint-staged): CI runs format check, lint, typecheck, tests, and build on every PR, and the same scripts run locally on demand. Hooks can be added later if commit-time enforcement proves necessary.
 - **Tag labels derive from the API enum.** The mockups show sample tag texts that contradict each other across surfaces (the same tag renders "IOS APP" on cards but "IOS" in the tag menu, "ANDROID" on cards but "Android App" in the menu). Since the API's TaskTag enum is the real domain, labels derive from the enum values (IOS, ANDROID, REACT, NODE JS, RAILS) and are identical everywhere.
 - **List group-header hover icons are omitted.** One mockup group header shows +/… icons; they have no behavior behind them (non-working UI, same principle as the bell).
+- **List rows have an actions column the mockup lacks.** The requirement ties update/delete to the options icon, and a list-only user would otherwise have no way to reach them — requirements outrank mockups, so each row ends with the same options menu the cards use.
 - **List-view row borders follow the due date.** The mockup's task table shows rows with identical dates but different left-border colors — an inconsistency the team acknowledged in Slack ("we use to have those in real projects"). Per the team's guidance that the border is a due-date indicator, the rule implemented is: overdue = red (primary), due within two days = amber (tertiary), later = green (secondary).
 - **The header bell is THE notification system.** Mutation successes and failures are recorded to a notification center the bell opens (unread dot, ten-entry history, marked read on open); failures additionally surface as inline alerts in the dialog that caused them, so errors are impossible to miss. Transient toasts were built first and deliberately removed — two presentations of the same event stream duplicated a function; the bell is the one the Figma shows. The panel's own design has no mockup, so it reuses the app's menu anatomy. The card metric icons below stay omitted because their data provably does not exist in the schema — the bell's does.
 - **Card attachment/fork/comment icons are omitted.** The Figma shows those metrics on task cards, but the API's Task type exposes no fields for them. Per mentor guidance not to expose non-working UI, the icons are removed until the schema provides the data; the SVGs live in git history for easy reintroduction.

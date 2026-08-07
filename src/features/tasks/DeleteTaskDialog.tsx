@@ -1,8 +1,8 @@
-import { useEffect } from 'react'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { graphqlClient } from '@/lib/graphql-client'
 import { DeleteTaskDocument } from '@/features/tasks/queries'
 import { useNotify } from '@/components/ui/notifications-context'
+import { useDialogFocus } from '@/components/ui/use-dialog-focus'
 import type { ApiTask } from '@/features/tasks/types'
 
 export function DeleteTaskDialog({ task, onClose }: { task: ApiTask; onClose: () => void }) {
@@ -27,18 +27,14 @@ export function DeleteTaskDialog({ task, onClose }: { task: ApiTask; onClose: ()
     if (!isPending) onClose()
   }
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape' && !isPending) onClose()
-    }
-    window.addEventListener('keydown', onKeyDown)
-    return () => {
-      window.removeEventListener('keydown', onKeyDown)
-    }
-  }, [onClose, isPending])
+  const { containerRef, trapFocus } = useDialogFocus(dismiss)
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      ref={containerRef}
+      onKeyDown={trapFocus}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+    >
       <button
         type="button"
         aria-label="Close dialog"
@@ -63,6 +59,7 @@ export function DeleteTaskDialog({ task, onClose }: { task: ApiTask; onClose: ()
         )}
         <div className="flex items-center justify-end">
           <button
+            autoFocus
             type="button"
             onClick={dismiss}
             className="rounded-full px-4 py-2 text-body-s leading-5 font-bold text-neutral-1"
