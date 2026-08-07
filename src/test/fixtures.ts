@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 import { graphqlClient } from '@/lib/graphql-client'
-import type { ProfileQuery, TasksQuery } from '@/graphql/generated/graphql'
+import type { ProfileQuery, TasksQuery, UsersQuery } from '@/graphql/generated/graphql'
 
 function daysFromNow(days: number): string {
   const date = new Date()
@@ -54,6 +54,13 @@ export function makeFixtureTasks(): TasksQuery['tasks'] {
       tags: ['ANDROID'],
       assignee: null,
     },
+  ]
+}
+
+export function makeFixtureUsers(): UsersQuery['users'] {
+  return [
+    { id: 'user-1', fullName: 'Jane Doe', avatar: null },
+    { id: 'user-2', fullName: 'Sam Lee', avatar: null },
   ]
 }
 

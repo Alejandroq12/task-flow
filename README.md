@@ -113,7 +113,7 @@ src/
 - [x] Update task — Edit via the card/list options menu, reusing the shared TaskForm with all six required editable fields (name, due date, position, status, tags, estimate) plus assignee; success/failure notifications
 - [x] Delete task — 'Delete Task?' confirmation via the options menu, deleteTask by id, success/failure notifications
 - [x] View toggle & My Task — grid/list layouts on both views (list = the mockup's grouped table with due-date row indicators); My Task filters to tasks assigned to the logged-in user via the profile query
-- [ ] Search & filter
+- [x] Search & filter — the header search and five filter chips (status, estimate, tags, due date, owner) live in URL search params, combine freely, and show a dedicated empty-results state when nothing matches
 - [ ] User settings page
 
 ### Bonus points attempted
@@ -124,6 +124,7 @@ src/
 
 - **Generated GraphQL code is committed on purpose.** `src/graphql/generated/` (output of `npm run codegen`) is checked into git so CI can typecheck and build without holding the API token. Regenerate after changing any query/mutation; never edit by hand.
 - **Quality gates are CI-enforced, not hook-enforced.** There are deliberately no git hooks (husky/lint-staged): CI runs format check, lint, typecheck, tests, and build on every PR, and the same scripts run locally on demand. Hooks can be added later if commit-time enforcement proves necessary.
+- **Filter state lives in the URL.** Search and filters are `?q=…&status=…` search params, not component state: filtered views are shareable/bookmarkable, survive reloads, and search-params changes don't remount the page (the error boundary keys on pathname only). Three observed API behaviors are documented rather than papered over: name matching is a **case-sensitive** substring (verified: `icket` matches `Ticket5`, `ticket` does not); `dueDate` filters by **exact timestamp** equality (this app writes all due dates at noon UTC, so day-level filtering works for tasks it created); and `ownerId` is accepted but **ignored by the server** (a nonexistent id returns the full task list) — the filter is sent as required, and the behavior is the API's to fix.
 - **Tag labels derive from the API enum.** The mockups show sample tag texts that contradict each other across surfaces (the same tag renders "IOS APP" on cards but "IOS" in the tag menu, "ANDROID" on cards but "Android App" in the menu). Since the API's TaskTag enum is the real domain, labels derive from the enum values (IOS, ANDROID, REACT, NODE JS, RAILS) and are identical everywhere.
 - **List group-header hover icons are omitted.** One mockup group header shows +/… icons; they have no behavior behind them (non-working UI, same principle as the bell).
 - **List rows have an actions column the mockup lacks.** The requirement ties update/delete to the options icon, and a list-only user would otherwise have no way to reach them — requirements outrank mockups, so each row ends with the same options menu the cards use.
