@@ -114,7 +114,7 @@ src/
 - [x] Delete task — 'Delete Task?' confirmation via the options menu, deleteTask by id, success/failure notifications
 - [x] View toggle & My Task — grid/list layouts on both views (list = the mockup's grouped table with due-date row indicators), switched by the toolbar icons on desktop and by the Dashboard/Task tabs on mobile; My Task filters to tasks assigned to the logged-in user via the profile query
 - [x] Search & filter — the header search and five filter chips (status, estimate, tags, due date, owner) live in URL search params, combine freely, and show a dedicated empty-results state when nothing matches
-- [x] User settings page — reached from a Settings sidebar item (built from the design system's own abstract SidebarItem component) and by clicking the header avatar; /settings renders the profile query (full name, email, type chip, created/updated dates) in an invented card design built from the app's own tokens; the requirement's Position field does not exist on the API's User type (verified by introspection), so the row states that instead of fabricating a value
+- [x] User settings page — reached from a Settings sidebar item — rendered with the same NavLink anatomy as Dashboard and My Task; the design system documents its SidebarItem as an abstract component, which is what sanctions adding a third item — and by clicking the header avatar; /settings renders the profile query (full name, email, type chip, created/updated dates) in an invented card design built from the app's own tokens; the requirement's Position field does not exist on the API's User type (verified by introspection), so the row states that instead of fabricating a value
 
 ### Bonus points attempted
 
