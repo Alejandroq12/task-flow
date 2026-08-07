@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { routes } from '@/app/router'
-import { fixtureTasks, tasksRequestMock } from '@/test/fixtures'
+import { makeFixtureTasks, tasksRequestMock } from '@/test/fixtures'
 
 vi.mock('@/lib/graphql-client', () => ({
   graphqlClient: { request: vi.fn() },
@@ -12,7 +12,7 @@ vi.mock('@/lib/graphql-client', () => ({
 
 beforeEach(() => {
   tasksRequestMock().mockReset()
-  tasksRequestMock().mockResolvedValue({ tasks: fixtureTasks })
+  tasksRequestMock().mockResolvedValue({ tasks: makeFixtureTasks() })
 })
 
 // Fresh QueryClient per test: no cache leaks between tests, no retries

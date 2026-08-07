@@ -52,14 +52,8 @@ export function TaskCard({ task }: { task: ApiTask }) {
         />
         <div className="flex items-center gap-4 text-neutral-1">
           <AttachIcon className="size-4" />
-          <span className="flex items-center gap-1 text-body-m">
-            5
-            <ForkIcon className="size-4" />
-          </span>
-          <span className="flex items-center gap-1 text-body-m">
-            3
-            <ChatIcon className="size-4" />
-          </span>
+          <ForkIcon className="size-4" />
+          <ChatIcon className="size-4" />
         </div>
       </div>
     </article>
