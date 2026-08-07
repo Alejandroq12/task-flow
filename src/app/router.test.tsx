@@ -5,8 +5,13 @@ import { createMemoryRouter, RouterProvider } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { routes } from '@/app/router'
 import { NotificationsProvider } from '@/components/ui/notifications'
-import { makeFixtureProfile, makeFixtureTasks, tasksRequestMock } from '@/test/fixtures'
-import { ProfileDocument } from '@/features/tasks/queries'
+import {
+  makeFixtureProfile,
+  makeFixtureTasks,
+  makeFixtureUsers,
+  tasksRequestMock,
+} from '@/test/fixtures'
+import { ProfileDocument, UsersDocument } from '@/features/tasks/queries'
 
 vi.mock('@/lib/graphql-client', () => ({
   graphqlClient: { request: vi.fn() },
@@ -16,11 +21,11 @@ beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(new Date('2026-08-06T12:00:00Z'))
   tasksRequestMock().mockReset()
-  tasksRequestMock().mockImplementation((document: unknown) =>
-    document === ProfileDocument
-      ? Promise.resolve({ profile: makeFixtureProfile() })
-      : Promise.resolve({ tasks: makeFixtureTasks() }),
-  )
+  tasksRequestMock().mockImplementation((document: unknown) => {
+    if (document === ProfileDocument) return Promise.resolve({ profile: makeFixtureProfile() })
+    if (document === UsersDocument) return Promise.resolve({ users: makeFixtureUsers() })
+    return Promise.resolve({ tasks: makeFixtureTasks() })
+  })
 })
 
 afterEach(() => {
@@ -145,7 +150,11 @@ describe('tasks query states', () => {
   })
 
   it('shows an empty state when there are no results', async () => {
-    tasksRequestMock().mockResolvedValue({ tasks: [] })
+    tasksRequestMock().mockImplementation((document: unknown) => {
+      if (document === UsersDocument) return Promise.resolve({ users: makeFixtureUsers() })
+      if (document === ProfileDocument) return Promise.resolve({ profile: makeFixtureProfile() })
+      return Promise.resolve({ tasks: [] })
+    })
     renderAt('/')
     expect(await screen.findByText(/no tasks found/i)).toBeInTheDocument()
   })

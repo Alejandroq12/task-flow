@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 import { graphqlClient } from '@/lib/graphql-client'
-import type { ProfileQuery, TasksQuery } from '@/graphql/generated/graphql'
+import type { ProfileQuery, TasksQuery, UsersQuery } from '@/graphql/generated/graphql'
 
 function daysFromNow(days: number): string {
   const date = new Date()
@@ -12,6 +12,7 @@ export function makeFixtureTasks(): TasksQuery['tasks'] {
   return [
     {
       id: 'task-1',
+      creator: { id: 'user-1' },
       name: 'Slack',
       dueDate: daysFromNow(0),
       pointEstimate: 'FOUR',
@@ -23,6 +24,7 @@ export function makeFixtureTasks(): TasksQuery['tasks'] {
     },
     {
       id: 'task-2',
+      creator: { id: 'user-2' },
       name: 'Twitter',
       dueDate: daysFromNow(-1),
       pointEstimate: 'EIGHT',
@@ -34,6 +36,7 @@ export function makeFixtureTasks(): TasksQuery['tasks'] {
     },
     {
       id: 'task-3',
+      creator: { id: 'user-1' },
       name: 'Samsung',
       dueDate: daysFromNow(5),
       pointEstimate: 'TWO',
@@ -45,6 +48,7 @@ export function makeFixtureTasks(): TasksQuery['tasks'] {
     },
     {
       id: 'task-4',
+      creator: { id: 'user-2' },
       name: 'Tesla',
       dueDate: daysFromNow(3),
       pointEstimate: 'ONE',
@@ -54,6 +58,13 @@ export function makeFixtureTasks(): TasksQuery['tasks'] {
       tags: ['ANDROID'],
       assignee: null,
     },
+  ]
+}
+
+export function makeFixtureUsers(): UsersQuery['users'] {
+  return [
+    { id: 'user-1', fullName: 'Jane Doe', avatar: null },
+    { id: 'user-2', fullName: 'Sam Lee', avatar: null },
   ]
 }
 

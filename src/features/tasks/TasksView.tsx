@@ -30,9 +30,10 @@ function TaskBoardSkeleton() {
 interface TasksViewProps {
   input?: FilterTaskInput
   layout?: BoardLayout
+  filtered?: boolean
 }
 
-export function TasksView({ input = {}, layout = 'grid' }: TasksViewProps) {
+export function TasksView({ input = {}, layout = 'grid', filtered = false }: TasksViewProps) {
   const { data, isPending, isError, refetch } = useQuery({
     queryKey: ['tasks', input],
     queryFn: () => graphqlClient.request(TasksDocument, { input }),
@@ -51,10 +52,26 @@ export function TasksView({ input = {}, layout = 'grid' }: TasksViewProps) {
     )
   }
 
-  if (data.tasks.length === 0) {
-    return <p className="p-4 text-body-m text-neutral-2">No tasks found.</p>
+  const tasks =
+    input.ownerId !== undefined && input.ownerId !== null
+      ? data.tasks.filter((task) => task.creator.id === input.ownerId)
+      : data.tasks
+
+  if (tasks.length === 0) {
+    return (
+      <div className="flex flex-col items-start gap-2 p-4">
+        <p className="text-body-l font-semibold text-neutral-1">
+          {filtered ? 'No tasks match your filters' : 'No tasks found'}
+        </p>
+        <p className="text-body-m text-neutral-2">
+          {filtered
+            ? 'Try removing or changing some filters to see more results.'
+            : 'Create a task with the + button to get started.'}
+        </p>
+      </div>
+    )
   }
 
-  const columns = groupTasksByStatus(data.tasks)
+  const columns = groupTasksByStatus(tasks)
   return layout === 'grid' ? <TaskBoard columns={columns} /> : <TaskList columns={columns} />
 }

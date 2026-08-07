@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useSearchParams } from 'react-router'
 import avatarUrl from '@/assets/avatar.png'
 import { SearchIcon } from '@/components/ui/icons'
 import { NotificationsBell } from '@/components/layout/NotificationsBell'
@@ -9,7 +10,37 @@ interface HeaderProps {
 }
 
 export function Header({ sidebarOpen, onOpenSidebar }: HeaderProps) {
-  const [query, setQuery] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const urlQuery = searchParams.get('q') ?? ''
+  const [query, setQuery] = useState(urlQuery)
+  const lastPushed = useRef(urlQuery)
+
+  useEffect(() => {
+    if (urlQuery !== lastPushed.current) {
+      lastPushed.current = urlQuery
+      setQuery(urlQuery)
+    }
+  }, [urlQuery])
+
+  useEffect(() => {
+    const trimmed = query.trim()
+    if (trimmed === urlQuery) return
+    const handle = setTimeout(() => {
+      lastPushed.current = trimmed
+      setSearchParams(
+        (current) => {
+          const next = new URLSearchParams(current)
+          if (trimmed === '') next.delete('q')
+          else next.set('q', trimmed)
+          return next
+        },
+        { replace: true },
+      )
+    }, 300)
+    return () => {
+      clearTimeout(handle)
+    }
+  }, [query, urlQuery, setSearchParams])
   return (
     <header className="flex items-center gap-3 bg-neutral-4 px-6 py-4 lg:gap-6 lg:rounded-2xl lg:py-3">
       <button
