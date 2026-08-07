@@ -1,12 +1,14 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import avatarUrl from '@/assets/avatar.png'
+import { avatarSrc } from '@/lib/avatar'
 import { graphqlClient } from '@/lib/graphql-client'
 import { UsersDocument } from '@/features/tasks/queries'
 import { useDialogFocus } from '@/components/ui/use-dialog-focus'
 import { MenuPanel } from '@/features/tasks/MenuPanel'
-import { avatarSrc, POINTS, STATUS_COLUMNS, TAG_META } from '@/features/tasks/task-display'
+import { POINTS, STATUS_COLUMNS, TAG_META } from '@/features/tasks/task-display'
 import { DatePicker, DatePickerDialog } from '@/features/tasks/DatePicker'
+import { UserIcon } from '@/components/ui/icons'
 import {
   CalendarIcon,
   CheckboxBlankIcon,
@@ -14,7 +16,6 @@ import {
   CloseIcon,
   EstimateIcon,
   LabelIcon,
-  UserIcon,
 } from '@/features/tasks/icons'
 import type { PointEstimate, Status, TaskTag } from '@/graphql/generated/graphql'
 

@@ -1,10 +1,11 @@
 import { NavLink } from 'react-router'
 import logoUrl from '@/assets/logos/ravn-logomark-white.svg'
-import { GridIcon, ListIcon } from '@/components/ui/icons'
+import { GridIcon, ListIcon, UserIcon } from '@/components/ui/icons'
 
 const navItems = [
   { to: '/', label: 'Dashboard', Icon: GridIcon },
   { to: '/my-task', label: 'My Task', Icon: ListIcon },
+  { to: '/settings', label: 'Settings', Icon: UserIcon },
 ]
 
 interface SidebarProps {

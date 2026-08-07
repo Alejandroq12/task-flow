@@ -66,8 +66,3 @@ export const tagToneClasses: Record<TagTone, string> = {
 }
 
 export const dueDateToIso = (day: string) => new Date(`${day}T12:00:00Z`).toISOString()
-
-const LEGACY_DICEBEAR = /^https:\/\/avatars\.dicebear\.com\/api\/([^/]+)\/(.+)\.svg$/
-
-export const avatarSrc = (avatar: string | null | undefined) =>
-  avatar?.replace(LEGACY_DICEBEAR, 'https://api.dicebear.com/9.x/$1/svg?seed=$2')

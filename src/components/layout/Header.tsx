@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useSearchParams } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import avatarUrl from '@/assets/avatar.png'
 import { SearchIcon } from '@/components/ui/icons'
 import { NotificationsBell } from '@/components/layout/NotificationsBell'
@@ -70,7 +70,9 @@ export function Header({ sidebarOpen, onOpenSidebar }: HeaderProps) {
       </div>
       <div className="hidden shrink-0 items-center gap-6 lg:flex">
         <NotificationsBell />
-        <img className="size-10 rounded-full" src={avatarUrl} alt="Profile" />
+        <Link to="/settings" aria-label="Settings" className="rounded-full">
+          <img className="size-10 rounded-full" src={avatarUrl} alt="" />
+        </Link>
       </div>
     </header>
   )

@@ -1,8 +1,8 @@
 import avatarUrl from '@/assets/avatar.png'
+import { avatarSrc } from '@/lib/avatar'
 import { CaretDownIcon } from '@/features/tasks/icons'
 import { TaskActions } from '@/features/tasks/TaskActions'
 import {
-  avatarSrc,
   dueInfo,
   POINTS,
   TAG_META,

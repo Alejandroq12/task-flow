@@ -11,7 +11,8 @@ import {
   makeFixtureUsers,
   tasksRequestMock,
 } from '@/test/fixtures'
-import { ProfileDocument, UsersDocument } from '@/features/tasks/queries'
+import { UsersDocument } from '@/features/tasks/queries'
+import { ProfileDocument } from '@/lib/profile'
 
 vi.mock('@/lib/graphql-client', () => ({
   graphqlClient: { request: vi.fn() },
