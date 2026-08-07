@@ -1,6 +1,12 @@
 import avatarUrl from '@/assets/avatar.png'
-import { AlarmIcon, AttachIcon, ChatIcon, DotsIcon, ForkIcon } from '@/features/tasks/icons'
-import { dueInfo, pointsLabel, TAG_META, type TagTone } from '@/features/tasks/task-display'
+import { AlarmIcon, DotsIcon } from '@/features/tasks/icons'
+import {
+  avatarSrc,
+  dueInfo,
+  pointsLabel,
+  TAG_META,
+  type TagTone,
+} from '@/features/tasks/task-display'
 import type { ApiTask } from '@/features/tasks/types'
 
 const tagToneClasses: Record<TagTone, string> = {
@@ -44,17 +50,12 @@ export function TaskCard({ task }: { task: ApiTask }) {
           </span>
         ))}
       </div>
-      <div className="flex items-center justify-between">
+      <div className="flex items-center">
         <img
           className="size-8 rounded-full"
-          src={task.assignee?.avatar ?? avatarUrl}
+          src={avatarSrc(task.assignee?.avatar) ?? avatarUrl}
           alt={task.assignee?.fullName ?? 'Unassigned'}
         />
-        <div className="flex items-center gap-4 text-neutral-1">
-          <AttachIcon className="size-4" />
-          <ForkIcon className="size-4" />
-          <ChatIcon className="size-4" />
-        </div>
       </div>
     </article>
   )
