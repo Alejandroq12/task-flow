@@ -1,13 +1,22 @@
 import avatarUrl from '@/assets/avatar.png'
-import { AlarmIcon, AttachIcon, ChatIcon, DotsIcon, ForkIcon } from '@/features/tasks/icons'
-import type { Task, TagTone } from '@/features/tasks/types'
+import { AlarmIcon, DotsIcon } from '@/features/tasks/icons'
+import {
+  avatarSrc,
+  dueInfo,
+  pointsLabel,
+  TAG_META,
+  type TagTone,
+} from '@/features/tasks/task-display'
+import type { ApiTask } from '@/features/tasks/types'
 
 const tagToneClasses: Record<TagTone, string> = {
   secondary: 'bg-secondary-4/10 text-secondary-4',
   tertiary: 'bg-tertiary-4/10 text-tertiary-4',
+  neutral: 'bg-neutral-2/10 text-neutral-1',
 }
 
-export function TaskCard({ task }: { task: Task }) {
+export function TaskCard({ task }: { task: ApiTask }) {
+  const due = dueInfo(task.dueDate)
   return (
     <article className="flex flex-col gap-4 rounded-lg bg-neutral-4 p-4">
       <div className="flex h-8 items-center gap-2">
@@ -19,39 +28,34 @@ export function TaskCard({ task }: { task: Task }) {
         </span>
       </div>
       <div className="flex items-center justify-between">
-        <span className="text-body-m font-semibold text-neutral-1">{task.points} Pts</span>
+        <span className="text-body-m font-semibold text-neutral-1">
+          {pointsLabel(task.pointEstimate)}
+        </span>
         <span
           className={`flex items-center gap-2 rounded px-4 py-1 text-body-m font-semibold ${
-            task.overdue ? 'bg-primary-4/10 text-primary-4' : 'bg-neutral-2/10 text-neutral-1'
+            due.overdue ? 'bg-primary-4/10 text-primary-4' : 'bg-neutral-2/10 text-neutral-1'
           }`}
         >
           <AlarmIcon className="size-6" />
-          {task.dueLabel}
+          {due.label}
         </span>
       </div>
       <div className="flex flex-wrap gap-2">
-        {task.tags.map(({ label, tone }) => (
+        {task.tags.map((tag) => (
           <span
-            key={label}
-            className={`rounded px-4 py-1 text-body-m font-semibold whitespace-nowrap ${tagToneClasses[tone]}`}
+            key={tag}
+            className={`rounded px-4 py-1 text-body-m font-semibold whitespace-nowrap ${tagToneClasses[TAG_META[tag].tone]}`}
           >
-            {label}
+            {TAG_META[tag].label}
           </span>
         ))}
       </div>
-      <div className="flex items-center justify-between">
-        <img className="size-8 rounded-full" src={avatarUrl} alt="Assignee" />
-        <div className="flex items-center gap-4 text-neutral-1">
-          <AttachIcon className="size-4" />
-          <span className="flex items-center gap-1 text-body-m">
-            {task.forks}
-            <ForkIcon className="size-4" />
-          </span>
-          <span className="flex items-center gap-1 text-body-m">
-            {task.comments}
-            <ChatIcon className="size-4" />
-          </span>
-        </div>
+      <div className="flex items-center">
+        <img
+          className="size-8 rounded-full"
+          src={avatarSrc(task.assignee?.avatar) ?? avatarUrl}
+          alt={task.assignee?.fullName ?? 'Unassigned'}
+        />
       </div>
     </article>
   )
