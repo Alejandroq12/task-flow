@@ -119,7 +119,14 @@ export function TaskForm({
 
   const selectedAssignee = users.data?.users.find((user) => user.id === assigneeId)
   const statusTitle = STATUS_COLUMNS.find((column) => column.status === status)?.title ?? status
-  const canSubmit = name.trim().length > 0 && estimate !== null && dueDate !== ''
+  const positionNumber = Number(position)
+  const positionValid =
+    !showPosition || (position !== '' && Number.isFinite(positionNumber) && positionNumber > 0)
+  const canSubmit = name.trim().length > 0 && estimate !== null && dueDate !== '' && positionValid
+  const validationMessage =
+    estimate !== null && dueDate !== '' && !positionValid
+      ? 'Position must be a number greater than zero.'
+      : 'An estimate and a due date are required.'
 
   const submit = () => {
     if (isPending) return
@@ -381,6 +388,7 @@ export function TaskForm({
               <input
                 type="number"
                 min="1"
+                step="any"
                 aria-label="Position"
                 value={position}
                 onChange={(event) => {
@@ -435,7 +443,7 @@ export function TaskForm({
             role="alert"
             className="w-full rounded bg-primary-4/10 px-4 py-2 text-body-m text-primary-4"
           >
-            {canSubmit ? errorMessage : 'An estimate and a due date are required.'}
+            {canSubmit ? errorMessage : validationMessage}
           </div>
         )}
         <div className="hidden items-center gap-6 self-end lg:flex">

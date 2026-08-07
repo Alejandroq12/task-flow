@@ -43,7 +43,6 @@ export function EditTaskModal({ task, onClose }: { task: ApiTask; onClose: () =>
       isPending={updateTask.isPending}
       isError={updateTask.isError}
       onSubmit={(values) => {
-        const position = Number(values.position)
         updateTask.mutate({
           id: task.id,
           name: values.name.trim(),
@@ -52,9 +51,7 @@ export function EditTaskModal({ task, onClose }: { task: ApiTask; onClose: () =>
           status: values.status,
           tags: values.tags,
           assigneeId: values.assigneeId,
-          ...(values.position !== '' && Number.isFinite(position) && position >= 1
-            ? { position }
-            : {}),
+          position: Number(values.position),
         })
       }}
       onClose={onClose}
