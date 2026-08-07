@@ -49,6 +49,10 @@ Real values live in `.env.local`, which is gitignored — never commit tokens. B
 
 > **Security note:** the token is deliberately not `VITE_`-prefixed. Vite inlines `VITE_*` variables into the public JS bundle, where anyone could extract them. Instead, the app calls the relative path `/graphql`, and the dev server proxies it to the real API, attaching the `Authorization` header in Node (see `vite.config.ts`). The token never reaches the browser. A deployed build would need the same proxy as a serverless function — the static bundle alone cannot, and must not, carry the token — and that proxy would itself need caller authentication and rate limiting, since an open proxy holding a shared token is effectively an open relay to the API. `API_URL` must be `https` (enforced at startup); the token never travels over plaintext.
 
+### Deploying (Vercel)
+
+The static bundle holds no API URL or token, so the deployment carries its own Node-side proxy: `api/graphql.ts` is a Vercel serverless function that forwards `POST /api/graphql` to the real API with the Bearer header attached server-side, and `vercel.json` rewrites `/graphql` to it (so the client code is identical in every environment) plus falls back to `index.html` for client-side routes. Setup: add `API_URL` and `API_TOKEN` (same names as `.env.local`) under Project → Settings → Environment Variables, then redeploy. **Accepted risk for this challenge:** the function has no caller authentication or rate limiting, so the deployed URL is an open relay to the challenge API (see the security note above) — acceptable for a graded demo holding a scoped challenge token, not for production.
+
 ### Available scripts
 
 ```bash
