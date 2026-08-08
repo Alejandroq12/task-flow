@@ -27,7 +27,7 @@ Requires Node 24.14.1+ (see `.nvmrc`), the first Node 24 release whose bundled n
 git clone https://github.com/Alejandroq12/task-flow.git
 cd task-flow
 npm install
-cp .env.example .env.local   # then add the project access token
+cp .env.example .env.local   # then fill in the API URL and access token from the challenge instructions
 npm run dev
 ```
 
