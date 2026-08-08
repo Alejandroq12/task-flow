@@ -40,7 +40,7 @@ The app runs at `http://localhost:5173`.
 | `API_URL`   | GraphQL endpoint of the project API                     |
 | `API_TOKEN` | Personal access token (attached server-side, see below) |
 
-Real values live in `.env.local`, which is gitignored. Never commit tokens. `npm run codegen` also requires both variables.
+Real values live in `.env.local`, which is gitignored. Never commit tokens. `npm run codegen` also requires both variables. `.env.example` ships placeholders for both on purpose: this repo is public and the endpoint is internal to the challenge, so publishing it would help nobody who doesn't already have it from the instructions.
 
 > **Security note:** the token is deliberately not `VITE_`-prefixed. Vite inlines `VITE_*` variables into the public JS bundle, where anyone could extract them. Instead, the app calls the relative path `/graphql`, and the dev server proxies it to the real API, attaching the `Authorization` header in Node (see `vite.config.ts`). The token never reaches the browser. A deployed build would need the same proxy as a serverless function; the static bundle alone cannot, and must not, carry the token. That proxy would itself need caller authentication and rate limiting, since an open proxy holding a shared token is effectively an open relay to the API. `API_URL` must be `https` (enforced at startup); the token never travels over plaintext.
 
