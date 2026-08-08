@@ -17,6 +17,12 @@ const toneBorder: Record<DueTone, string> = {
   secondary: 'border-l-secondary-4',
 }
 
+const toneText: Record<DueTone, string> = {
+  primary: 'text-primary-3',
+  tertiary: 'text-tertiary-4',
+  secondary: 'text-secondary-4',
+}
+
 const cellBase = 'flex h-14 items-center border border-neutral-3 bg-neutral-4 py-1'
 const nameWidth = 'min-w-60 flex-1'
 const tagsWidth = 'w-42 shrink-0'
@@ -77,9 +83,7 @@ function TaskRow({ task, index }: { task: ApiTask; index: number }) {
         </span>
       </div>
       <div className={`${cellBase} ${dueWidth} pr-4 pl-2`}>
-        <span className={`text-body-m ${due.overdue ? 'text-primary-3' : 'text-neutral-1'}`}>
-          {titleCase(due.label)}
-        </span>
+        <span className={`text-body-m ${toneText[due.tone]}`}>{titleCase(due.label)}</span>
       </div>
       <div className={`${cellBase} ${actionsWidth} justify-center`}>
         <TaskActions task={task} />
