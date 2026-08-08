@@ -1,4 +1,4 @@
-# Task Flow — Task Management App
+# Task Flow: Task Management App
 
 ![Task Flow running on desktop, laptop, tablet, and phone](src/assets/readme/readme.png)
 
@@ -17,7 +17,7 @@ The app is deployed on Vercel: **[Task Flow](https://task-flow-iota-lime.vercel.
 - **Data:** TanStack Query + graphql-request, with GraphQL Code Generator for end-to-end typed operations
 - **Testing:** Vitest + React Testing Library
 - **Linting/Formatting:** ESLint (flat config, typescript-eslint type-checked) + Prettier
-- **CI:** GitHub Actions — format check, lint, typecheck, tests, and build on every PR
+- **CI:** GitHub Actions (format check, lint, typecheck, tests, and build on every PR)
 
 ## Setup & Running Locally
 
@@ -71,7 +71,7 @@ src/
   components/
     layout/     # Structural components (Layout with sidebar/header slots)
     ui/         # Shared, reusable UI components (used by 2+ features)
-  features/     # Feature modules — components/hooks/types owned by one feature
+  features/     # Feature modules: components/hooks/types owned by one feature
     tasks/      #   dashboard, task cards, task mutations
     settings/   #   user profile page
   graphql/
@@ -84,38 +84,38 @@ src/
 
 **Why this folder structure?**
 
-Feature-based instead of type-based. Everything a feature owns (components, hooks, types) lives in its own folder, so `features/tasks` could keep growing with cards, modals, menus, the date picker, and filters without me hunting through a global `components/` pile. Promotion to `components/ui` follows one rule: a piece moves there when a second feature actually needs it, not before. And features never import from each other, so any feature could be deleted with a single `rm -rf` and nothing outside it would break. The payoff is a boring dependency graph, which is exactly what I want in a codebase.
+Feature-based instead of type-based. Everything a feature owns (components, hooks, types) lives in its own folder, so `features/tasks` could keep growing with cards, modals, menus, the date picker, and filters without me hunting through a global `components/` pile. Promotion to `components/ui` follows one rule: a piece moves there when a second feature actually needs it, not before. And features never import from each other, so the only inbound edges are the router and its tests: deleting a feature means removing its folder plus its route entry, and nothing else in the app would notice. The payoff is a boring dependency graph, which is exactly what I want in a codebase.
 
 **Why this styling solution?**
 
-Tailwind CSS v4 with `@theme` tokens named after the Figma color styles. The important decision is not Tailwind itself but what I removed: I cleared the stock color, text, shadow, and tracking namespaces, so a class like `text-red-500` doesn't exist in this project. The only utilities that compile are the ones generated from the design system tokens. That turns design fidelity into something the build enforces instead of something a reviewer has to catch, and it keeps the Figma-to-code mapping literal: the mockup says Neutral 4, the class says `bg-neutral-4`.
+Tailwind CSS v4 with `@theme` tokens named after the Figma color styles. The important decision is not Tailwind itself but what I removed: I cleared the stock color, text, shadow, and tracking namespaces, so a class like `text-red-500` doesn't exist in this project. In those namespaces, the only utilities that compile are the ones generated from the design system tokens (layout utilities like `flex` and `p-4` stay stock, and arbitrary values like `bg-[#fff]` could still slip through, which is why they're treated as review findings). That makes the visual side of design fidelity mostly build-enforced instead of something a reviewer has to catch, and it keeps the Figma-to-code mapping literal: the mockup says Neutral 4, the class says `bg-neutral-4`.
 
 **Why this data-fetching approach?**
 
-TanStack Query + graphql-request + GraphQL Code Generator. Apollo was the obvious candidate and I looked at it first, but its centerpiece is a normalized cache, and this app doesn't have the problem that solves: there's one main query and a handful of mutations. What I actually needed was server-state management, meaning caching, loading and error states, retries, and cache invalidation after a mutation. That's exactly TanStack Query's job, and it does it with far less API surface. Underneath it, graphql-request is a small typed fetcher, and codegen generates TypeScript types straight from the API schema, so a query result is typed end to end without hand-written interfaces that could drift from reality. The tradeoff I accepted: no normalized cache means updates work by invalidate-and-refetch rather than surgical cache writes. For an app this size, refetching is simpler to reason about and impossible to get subtly wrong.
+TanStack Query + graphql-request + GraphQL Code Generator. Apollo was the obvious candidate and I looked at it first, but its centerpiece is a normalized cache, and this app doesn't have the problem that solves: there's one main query and a handful of mutations. What I actually needed was server-state management, meaning caching, loading and error states, retries, and cache invalidation after a mutation. That's exactly TanStack Query's job, and it does it with far less API surface. Underneath it, graphql-request is a small typed fetcher, and codegen generates TypeScript types straight from the API schema, so a query result is typed end to end without hand-written interfaces that could drift from reality. The tradeoff I accepted: no normalized cache means updates work by invalidate-and-refetch rather than surgical cache writes. That costs an extra round trip after each mutation, and it still depends on invalidating the right query keys. But with one main query there's only one key family to get right, and the server stays the single source of truth instead of a hand-maintained cache that can drift from it.
 
 **What I'd do differently with more time:**
 
-Drag and drop between columns is the feature I most wanted to reach. The groundwork is already in place: the API's `position` field is a `Float` precisely so a card can drop between two others without renumbering the whole column, and the create/update flows already send it. But doing drag and drop accessibly (keyboard support, screen reader announcements) deserves more than a rushed afternoon. I'd also add optimistic updates: today every mutation invalidates and refetches, which is always correct but one round-trip slower than it could feel. And I'd grow the test suite. Near the deadline I made a deliberate call: no new tests, keep the existing suite green in CI, and verify every new feature in a real browser instead. I still think that was the right trade under the clock, but the coverage debt is real and I'd pay it down first.
+Drag and drop between columns is the feature I most wanted to reach. The groundwork is already in place: the API's `position` field is a `Float` precisely so a card can drop between two others without renumbering the whole column, and the create/update flows already send it. But doing drag and drop accessibly (keyboard support, screen reader announcements) deserves more than a rushed afternoon. I'd also add optimistic updates: today every mutation invalidates and refetches, which keeps the UI honest with the server but feels one round-trip slower than it could. And I'd grow the test suite. Near the deadline I made a deliberate call: no new tests, keep the existing suite green in CI, and verify every new feature in a real browser instead. I still think that was the right trade under the clock, but the coverage debt is real and I'd pay it down first.
 
 ## What's Implemented
 
 - [x] Initial setup (folder structure, routing, styles solution, linting/formatting, error boundary, tests, CI)
 - [x] Dashboard UI (static): sidebar with mobile drawer, header, toolbar, five status columns, task cards
-- [x] API connection — fetch tasks into their status columns, with loading skeleton, failure alert + retry, and empty state
-- [x] Create task — the + buttons open a Figma-matched modal (full-screen page on mobile, floating panel on desktop) with custom estimate/assignee/tag menus and per-breakpoint date pickers; createTask + cache invalidation + error handling
-- [x] Update task — Edit via the card/list options menu, reusing the shared TaskForm with all six required editable fields (name, due date, position, status, tags, estimate) plus assignee; success/failure notifications
-- [x] Delete task — 'Delete Task?' confirmation via the options menu, deleteTask by id, success/failure notifications
-- [x] View toggle & My Task — grid/list layouts on both views (list = the mockup's grouped table with due-date row indicators), switched by the toolbar icons on desktop and by the Dashboard/Task tabs on mobile; My Task filters to tasks assigned to the logged-in user via the profile query
-- [x] Search & filter — the header search and five filter chips (status, estimate, tags, due date, owner) live in URL search params, combine freely, and show a dedicated empty-results state when nothing matches
-- [x] User settings page — reached from a Settings sidebar item (same NavLink anatomy as Dashboard and My Task; the design system documents its SidebarItem as an abstract component, which sanctions adding a third item) and by clicking the header avatar; /settings renders the profile query (full name, email, type chip, created/updated dates) in an invented card design built from the app's own tokens; the requirement's Position field does not exist on the API's User type (verified by introspection), so the row says so instead of fabricating a value
+- [x] API connection: fetch tasks into their status columns, with loading skeleton, failure alert + retry, and empty state
+- [x] Create task: the + buttons open a Figma-matched modal (full-screen page on mobile, floating panel on desktop) with custom estimate/assignee/tag menus and per-breakpoint date pickers; createTask + cache invalidation + error handling
+- [x] Update task: Edit via the card/list options menu, reusing the shared TaskForm with all six required editable fields (name, due date, position, status, tags, estimate) plus assignee; success/failure notifications
+- [x] Delete task: 'Delete Task?' confirmation via the options menu, deleteTask by id, success/failure notifications
+- [x] View toggle & My Task: grid/list layouts on both views (list = the mockup's grouped table with due-date row indicators), switched by the toolbar icons on desktop and by the Dashboard/Task tabs on mobile; My Task filters to tasks assigned to the logged-in user via the profile query
+- [x] Search & filter: the header search and five filter chips (status, estimate, tags, due date, owner) live in URL search params, combine freely, and show a dedicated empty-results state when nothing matches
+- [x] User settings page: reached from a Settings sidebar item (same NavLink anatomy as Dashboard and My Task; the design system documents its SidebarItem as an abstract component, which sanctions adding a third item) and by clicking the header avatar; /settings renders the profile query (full name, email, type chip, created/updated dates) in an invented card design built from the app's own tokens; the requirement's Position field does not exist on the API's User type (verified by introspection), so the row says so instead of fabricating a value
 
 ## Bonus Points
 
-- **Total count of tasks by column** — board column headers and list group headers both carry live counts.
-- **Layout toggle (columns ↔ list)** — the desktop icon switcher and the mobile Dashboard/Task tabs drive one shared selection that survives navigation and resizes.
-- **Due-date colors** — green on time, amber under two days, red overdue: one rule (`dueInfo` in `task-display.ts`) drives the card date chips, the list view's row indicators, and the list date text. The mockup only shows the red/neutral chip states; the requirement asks for three colors, and requirements outrank mockups.
-- **Add-task animation** — after a create, the board refetches, scrolls the new card into view, and the card fade-rises in. React reconciles by task id, so only the genuinely new card mounts and animates, never the whole board. Under reduced-motion preferences, the scroll is instant and the entrance animation is disabled.
+- **Total count of tasks by column:** board column headers and list group headers both carry live counts.
+- **Layout toggle (columns ↔ list):** the desktop icon switcher and the mobile Dashboard/Task tabs drive one shared selection that survives navigation and resizes.
+- **Due-date colors:** green on time, amber under two days, red overdue. One rule (`dueInfo` in `task-display.ts`) drives the card date chips, the list view's row indicators, and the list date text. The mockup only shows the red/neutral chip states; the requirement asks for three colors, and requirements outrank mockups.
+- **Add-task animation:** after a create, the board refetches, scrolls the new card into view, and the card fade-rises in. React reconciles by task id, so only the genuinely new card mounts and animates, never the whole board. Under reduced-motion preferences, the scroll is instant and the entrance animation is disabled.
 
 ## Additional Notes
 
