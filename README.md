@@ -6,14 +6,7 @@ Task Flow is a complete task management app built on a GraphQL API: browse, crea
 
 ## Live Demo
 
-<!-- TODO: add once deployed (Vercel/Netlify) -->
-
-_Live app and video walkthrough coming soon._
-
-## Screenshots
-
-<!-- TODO before submission: per-feature captures — board, list view, create/edit modal, filters, settings -->
-<!-- Tip: a short GIF of the create flow (new card scrolling into view and animating in) sells it fastest -->
+The app is deployed on Vercel: **[Task Flow](https://task-flow-iota-lime.vercel.app/)**
 
 ## Tech Stack
 
@@ -89,22 +82,21 @@ src/
 
 ## Rationale & Decisions
 
-<!-- TODO: this section matters as much as the code — I will fill it in as I go, not all at the end -->
-
 **Why this folder structure?**
 
-<!-- Feature-based over type-based because... -->
+Feature-based instead of type-based. Everything a feature owns (components, hooks, types) lives in its own folder, so `features/tasks` could keep growing with cards, modals, menus, the date picker, and filters without me hunting through a global `components/` pile. Promotion to `components/ui` follows one rule: a piece moves there when a second feature actually needs it, not before. And features never import from each other, so any feature could be deleted with a single `rm -rf` and nothing outside it would break. The payoff is a boring dependency graph, which is exactly what I want in a codebase.
 
 **Why this styling solution?**
 
-<!-- Tailwind v4 with @theme tokens named after the Figma color styles because... -->
+Tailwind CSS v4 with `@theme` tokens named after the Figma color styles. The important decision is not Tailwind itself but what I removed: I cleared the stock color, text, shadow, and tracking namespaces, so a class like `text-red-500` doesn't exist in this project. The only utilities that compile are the ones generated from the design system tokens. That turns design fidelity into something the build enforces instead of something a reviewer has to catch, and it keeps the Figma-to-code mapping literal: the mockup says Neutral 4, the class says `bg-neutral-4`.
 
 **Why this data-fetching approach?**
 
-<!-- TanStack Query + graphql-request + codegen: what I chose and the tradeoff against alternatives (Apollo, urql) -->
+TanStack Query + graphql-request + GraphQL Code Generator. Apollo was the obvious candidate and I looked at it first, but its centerpiece is a normalized cache, and this app doesn't have the problem that solves: there's one main query and a handful of mutations. What I actually needed was server-state management, meaning caching, loading and error states, retries, and cache invalidation after a mutation. That's exactly TanStack Query's job, and it does it with far less API surface. Underneath it, graphql-request is a small typed fetcher, and codegen generates TypeScript types straight from the API schema, so a query result is typed end to end without hand-written interfaces that could drift from reality. The tradeoff I accepted: no normalized cache means updates work by invalidate-and-refetch rather than surgical cache writes. For an app this size, refetching is simpler to reason about and impossible to get subtly wrong.
 
 **What I'd do differently with more time:**
-<!-- honest reflection — this is a strong signal in review, not a weakness to hide -->
+
+Drag and drop between columns is the feature I most wanted to reach. The groundwork is already in place: the API's `position` field is a `Float` precisely so a card can drop between two others without renumbering the whole column, and the create/update flows already send it. But doing drag and drop accessibly (keyboard support, screen reader announcements) deserves more than a rushed afternoon. I'd also add optimistic updates: today every mutation invalidates and refetches, which is always correct but one round-trip slower than it could feel. And I'd grow the test suite. Near the deadline I made a deliberate call: no new tests, keep the existing suite green in CI, and verify every new feature in a real browser instead. I still think that was the right trade under the clock, but the coverage debt is real and I'd pay it down first.
 
 ## What's Implemented
 
@@ -133,11 +125,9 @@ src/
 - **Filter state lives in the URL.** Search and filters are `?q=…&status=…` search params, not component state: filtered views are shareable/bookmarkable and survive reloads, and search-params changes don't remount the page (the error boundary keys on pathname only). Three observed API behaviors are documented rather than papered over: name matching is a **case-sensitive** substring (verified: `icket` matches `Ticket5`, `ticket` does not); `dueDate` filters by **exact timestamp** equality (this app writes all due dates at noon UTC, so day-level filtering works for tasks it created); and `ownerId` is accepted but **ignored by the server** (a nonexistent id returns the full task list). The param is still sent as required, and the owner filter also applies client-side against the task's `creator.id`, so the control does what it says.
 - **Tag labels derive from the API enum.** The mockups show sample tag texts that contradict each other across surfaces (the same tag renders "IOS APP" on cards but "IOS" in the tag menu, "ANDROID" on cards but "Android App" in the menu). Since the API's TaskTag enum is the real domain, labels derive from the enum values (IOS, ANDROID, REACT, NODE JS, RAILS) and are identical everywhere.
 - **List group-header hover icons are omitted.** One mockup group header shows +/… icons; they have no behavior behind them (non-working UI, same principle as the bell).
-- **List rows have an actions column the mockup lacks.** The requirement ties update/delete to the options icon, and a list-only user would otherwise have no way to reach them. Requirements outrank mockups, so each row ends with the same options menu the cards use.
+- **List rows have an actions column the mockup lacks.** The requirement ties update/delete to the options icon, and a list-only user would otherwise have no way to reach them. The requirement wins over the drawing, so each row ends with the same options menu the cards use.
 - **List-view row borders follow the due date.** The mockup's task table shows rows with identical dates but different left-border colors, an inconsistency the team acknowledged in Slack ("we use to have those in real projects"). Per the team's guidance that the border is a due-date indicator, the rule is: overdue = red (primary), due within two days = amber (tertiary), later = green (secondary).
 - **The header bell is THE notification system.** Mutation successes and failures are recorded to a notification center the bell opens (unread dot, ten-entry history, marked read on open); failures also surface as inline alerts in the dialog that caused them, so errors are impossible to miss. Transient toasts were built first and deliberately removed. Two presentations of the same event stream duplicated a function; the bell is the one the Figma shows. The panel's own design has no mockup, so it reuses the app's menu anatomy. The card metric icons below stay omitted because their data provably does not exist in the schema; the bell's does.
 - **Card attachment/fork/comment icons are omitted.** The Figma shows those metrics on task cards, but the API's Task type exposes no fields for them. Per mentor guidance not to expose non-working UI, the icons are removed until the schema provides the data; the SVGs live in git history for easy reintroduction.
 - **Node 24 is a hard requirement.** `.npmrc` sets `engine-strict=true`, so `npm install` fails fast on older Node instead of warning.
 - **A11y deviation from the design, flagged and recommended per mentor guidance:** the Figma's active-tab red (`primary-4`, `#da584b`) on the dark surface measures ≈3.5:1, below WCAG AA's 4.5:1 for 15px text. Following the design team's process (flag + recommend), the active label uses `primary-3` (`#e27d73`), one step up the design system's own red scale, which measures ≈4.7:1 (≈4.5:1 worst-case over the 5% gradient wash). The indicator bar stays `primary-4` (non-text graphic, 3:1 rule, passes). The active state is also conveyed non-visually via `aria-current="page"`.
-
-<!-- TODO: anything else worth mentioning — known limitations, things I'd want feedback on, etc. -->
