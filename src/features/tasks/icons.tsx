@@ -68,18 +68,6 @@ export function CalendarIcon(props: IconProps) {
   )
 }
 
-export function UserIcon(props: IconProps) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
-      <path
-        transform="translate(4 1)"
-        d="M16 21H0V19C0 17.6739 0.526784 16.4021 1.46447 15.4645C2.40215 14.5268 3.67392 14 5 14H11C12.3261 14 13.5979 14.5268 14.5355 15.4645C15.4732 16.4021 16 17.6739 16 19V21ZM8 12C7.21207 12 6.43185 11.8448 5.7039 11.5433C4.97595 11.2417 4.31451 10.7998 3.75736 10.2426C3.20021 9.68549 2.75825 9.02405 2.45672 8.2961C2.15519 7.56815 2 6.78793 2 6C2 5.21207 2.15519 4.43185 2.45672 3.7039C2.75825 2.97595 3.20021 2.31451 3.75736 1.75736C4.31451 1.20021 4.97595 0.758251 5.7039 0.456723C6.43185 0.155195 7.21207 0 8 0C9.5913 0 11.1174 0.632141 12.2426 1.75736C13.3679 2.88258 14 4.4087 14 6C14 7.5913 13.3679 9.11742 12.2426 10.2426C11.1174 11.3679 9.5913 12 8 12Z"
-        fill="currentColor"
-      />
-    </svg>
-  )
-}
-
 export function CloseIcon(props: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
@@ -175,6 +163,38 @@ export function ChevronThinRightIcon(props: IconProps) {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
+    </svg>
+  )
+}
+
+export function EditIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path
+        transform="translate(3 2.03)"
+        d="M3.414 13.9708L13.556 3.82879L12.142 2.41479L2 12.5568V13.9708H3.414ZM4.243 15.9708H0V11.7278L11.435 0.292787C11.6225 0.105316 11.8768 0 12.142 0C12.4072 0 12.6615 0.105316 12.849 0.292787L15.678 3.12179C15.8655 3.30931 15.9708 3.56362 15.9708 3.82879C15.9708 4.09395 15.8655 4.34826 15.678 4.53579L4.243 15.9708ZM0 17.9708H18V19.9708H0V17.9708Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+export function TrashIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path
+        transform="translate(2 2)"
+        d="M15 4H20V6H18V19C18 19.2652 17.8946 19.5196 17.7071 19.7071C17.5196 19.8946 17.2652 20 17 20H3C2.73478 20 2.48043 19.8946 2.29289 19.7071C2.10536 19.5196 2 19.2652 2 19V6H0V4H5V1C5 0.734784 5.10536 0.48043 5.29289 0.292893C5.48043 0.105357 5.73478 0 6 0H14C14.2652 0 14.5196 0.105357 14.7071 0.292893C14.8946 0.48043 15 0.734784 15 1V4ZM16 6H4V18H16V6ZM7 2V4H13V2H7Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+export function CaretDownIcon(props: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" {...props}>
+      <path transform="translate(6 10)" d="M6 6L0 0H12L6 6Z" fill="currentColor" />
     </svg>
   )
 }

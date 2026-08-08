@@ -4,7 +4,15 @@ import userEvent from '@testing-library/user-event'
 import { createMemoryRouter, RouterProvider } from 'react-router'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { routes } from '@/app/router'
-import { makeFixtureTasks, tasksRequestMock } from '@/test/fixtures'
+import { NotificationsProvider } from '@/components/ui/notifications'
+import {
+  makeFixtureProfile,
+  makeFixtureTasks,
+  makeFixtureUsers,
+  tasksRequestMock,
+} from '@/test/fixtures'
+import { UsersDocument } from '@/features/tasks/queries'
+import { ProfileDocument } from '@/lib/profile'
 
 vi.mock('@/lib/graphql-client', () => ({
   graphqlClient: { request: vi.fn() },
@@ -14,7 +22,11 @@ beforeEach(() => {
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(new Date('2026-08-06T12:00:00Z'))
   tasksRequestMock().mockReset()
-  tasksRequestMock().mockResolvedValue({ tasks: makeFixtureTasks() })
+  tasksRequestMock().mockImplementation((document: unknown) => {
+    if (document === ProfileDocument) return Promise.resolve({ profile: makeFixtureProfile() })
+    if (document === UsersDocument) return Promise.resolve({ users: makeFixtureUsers() })
+    return Promise.resolve({ tasks: makeFixtureTasks() })
+  })
 })
 
 afterEach(() => {
@@ -30,7 +42,9 @@ function renderAt(path: string) {
   const router = createMemoryRouter(routes, { initialEntries: [path] })
   return render(
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <NotificationsProvider>
+        <RouterProvider router={router} />
+      </NotificationsProvider>
     </QueryClientProvider>,
   )
 }
@@ -60,20 +74,22 @@ describe('app routes', () => {
 describe('sidebar navigation', () => {
   it('marks only the active item with aria-current', () => {
     renderAt('/')
-    expect(screen.getByRole('link', { name: /dashboard/i })).toHaveAttribute('aria-current', 'page')
-    expect(screen.getByRole('link', { name: /my task/i })).not.toHaveAttribute('aria-current')
+    const nav = within(screen.getByRole('navigation', { name: /main/i }))
+    expect(nav.getByRole('link', { name: /dashboard/i })).toHaveAttribute('aria-current', 'page')
+    expect(nav.getByRole('link', { name: /my task/i })).not.toHaveAttribute('aria-current')
   })
 
   it('moves aria-current when the route changes', () => {
     renderAt('/my-task')
-    expect(screen.getByRole('link', { name: /my task/i })).toHaveAttribute('aria-current', 'page')
-    expect(screen.getByRole('link', { name: /dashboard/i })).not.toHaveAttribute('aria-current')
+    const nav = within(screen.getByRole('navigation', { name: /main/i }))
+    expect(nav.getByRole('link', { name: /my task/i })).toHaveAttribute('aria-current', 'page')
+    expect(nav.getByRole('link', { name: /dashboard/i })).not.toHaveAttribute('aria-current')
   })
 
   it('marks nothing active on unknown deep paths (renders not-found)', () => {
     renderAt('/my-task/anything')
     expect(screen.getByRole('heading', { level: 1, name: /not found/i })).toBeInTheDocument()
-    const nav = within(screen.getByRole('navigation'))
+    const nav = within(screen.getByRole('navigation', { name: /main/i }))
     expect(nav.getByRole('link', { name: /my task/i })).not.toHaveAttribute('aria-current')
     expect(nav.getByRole('link', { name: /dashboard/i })).not.toHaveAttribute('aria-current')
   })
@@ -98,27 +114,32 @@ describe('dashboard main content', () => {
     )
     if (!card) throw new Error('expected the Twitter card to render inside an <article>')
     const scoped = within(card)
-    expect(scoped.getByText(/8 pts/i)).toBeInTheDocument()
+    expect(scoped.getByText(/8 points/i)).toBeInTheDocument()
     expect(scoped.getByText(/yesterday/i)).toBeInTheDocument()
     expect(scoped.getByText('REACT')).toBeInTheDocument()
     expect(scoped.getByRole('img', { name: /unassigned/i })).toBeInTheDocument()
-    expect(scoped.getByRole('img', { name: /task options/i })).toBeInTheDocument()
+    expect(scoped.getByRole('button', { name: /task options/i })).toBeInTheDocument()
   })
 
   it('renders the toolbar view icons and the add-task affordance', () => {
     renderAt('/')
-    expect(screen.getByRole('img', { name: /grid view/i })).toBeInTheDocument()
-    expect(screen.getByRole('img', { name: /list view/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /grid view/i })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /list view/i })).toBeInTheDocument()
     expect(screen.getAllByRole('button', { name: /add task/i }).length).toBeGreaterThan(0)
   })
 
-  it('marks the correct mobile tab active per route', () => {
-    renderAt('/my-task')
-    const taskTab = screen.getByText('Task')
-    const tabs = taskTab.parentElement?.parentElement
-    if (!tabs) throw new Error('expected the mobile tabs container to exist')
-    expect(taskTab).toHaveClass('text-primary-4')
-    expect(within(tabs).getByText('Dashboard')).toHaveClass('text-neutral-2')
+  it('mobile tabs switch the layout and survive navigation', async () => {
+    const user = userEvent.setup()
+    renderAt('/')
+    expect(screen.getByRole('button', { name: 'Dashboard' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+    await user.click(screen.getByRole('button', { name: 'Task' }))
+    expect(screen.getByRole('button', { name: 'Task' })).toHaveAttribute('aria-pressed', 'true')
+    const nav = within(screen.getByRole('navigation', { name: /main/i }))
+    await user.click(nav.getByRole('link', { name: /my task/i }))
+    expect(screen.getByRole('button', { name: 'Task' })).toHaveAttribute('aria-pressed', 'true')
   })
 })
 
@@ -137,7 +158,11 @@ describe('tasks query states', () => {
   })
 
   it('shows an empty state when there are no results', async () => {
-    tasksRequestMock().mockResolvedValue({ tasks: [] })
+    tasksRequestMock().mockImplementation((document: unknown) => {
+      if (document === UsersDocument) return Promise.resolve({ users: makeFixtureUsers() })
+      if (document === ProfileDocument) return Promise.resolve({ profile: makeFixtureProfile() })
+      return Promise.resolve({ tasks: [] })
+    })
     renderAt('/')
     expect(await screen.findByText(/no tasks found/i)).toBeInTheDocument()
   })
@@ -180,7 +205,7 @@ describe('mobile navigation drawer', () => {
     const user = userEvent.setup()
     renderAt('/')
     await user.click(screen.getByRole('button', { name: /open navigation/i }))
-    const nav = within(screen.getByRole('navigation'))
+    const nav = within(screen.getByRole('navigation', { name: /main/i }))
     await user.click(nav.getByRole('link', { name: /my task/i }))
     expect(screen.getByRole('heading', { level: 1, name: /my task/i })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /open navigation/i })).toHaveAttribute(

@@ -1,49 +1,73 @@
 import { useState } from 'react'
-import { useLocation } from 'react-router'
 import { GridIcon, ListIcon } from '@/components/ui/icons'
 import { PlusIcon } from '@/features/tasks/icons'
 import { CreateTaskModal } from '@/features/tasks/CreateTaskModal'
+import type { BoardLayout } from '@/components/layout/view-layout'
 
-export function Toolbar() {
-  const { pathname } = useLocation()
+const MOBILE_TABS: { label: string; value: BoardLayout }[] = [
+  { label: 'Dashboard', value: 'grid' },
+  { label: 'Task', value: 'list' },
+]
+
+interface ToolbarProps {
+  layout: BoardLayout
+  onLayoutChange: (layout: BoardLayout) => void
+}
+
+export function Toolbar({ layout, onLayoutChange }: ToolbarProps) {
   const [createOpen, setCreateOpen] = useState(false)
-  const onMyTask = pathname === '/my-task'
   return (
     <div>
       <div className="-mx-4 flex lg:hidden">
-        <div className="flex flex-1 flex-col">
-          <span
-            className={`w-full pt-3 pb-2 text-center text-body-s ${onMyTask ? 'text-neutral-2' : 'text-primary-4'}`}
+        {MOBILE_TABS.map((tab) => (
+          <button
+            key={tab.label}
+            type="button"
+            aria-pressed={layout === tab.value}
+            onClick={() => {
+              onLayoutChange(tab.value)
+            }}
+            className="flex flex-1 flex-col"
           >
-            Dashboard
-          </span>
-          <span className={`h-0.5 w-full ${onMyTask ? 'bg-transparent' : 'bg-primary-4'}`} />
-        </div>
-        <div className="flex flex-1 flex-col">
-          <span
-            className={`w-full pt-3 pb-2 text-center text-body-s ${onMyTask ? 'text-primary-4' : 'text-neutral-2'}`}
-          >
-            Task
-          </span>
-          <span className={`h-0.5 w-full ${onMyTask ? 'bg-primary-4' : 'bg-transparent'}`} />
-        </div>
+            <span
+              className={`w-full pt-3 pb-2 text-center text-body-s ${layout === tab.value ? 'text-primary-4' : 'text-neutral-2'}`}
+            >
+              {tab.label}
+            </span>
+            <span
+              className={`h-0.5 w-full ${layout === tab.value ? 'bg-primary-4' : 'bg-transparent'}`}
+            />
+          </button>
+        ))}
       </div>
       <div className="hidden items-center justify-between py-1 lg:flex">
         <div className="flex h-10 w-20 rounded-lg bg-neutral-5">
-          <span
-            role="img"
+          <button
+            type="button"
             aria-label="List view"
-            className="flex size-10 items-center justify-center"
+            aria-pressed={layout === 'list'}
+            onClick={() => {
+              onLayoutChange('list')
+            }}
+            className={`flex size-10 items-center justify-center rounded-lg ${
+              layout === 'list' ? 'border border-primary-4 text-primary-4' : 'text-neutral-1'
+            }`}
           >
-            <ListIcon className="size-6 text-neutral-1" />
-          </span>
-          <span
-            role="img"
+            <ListIcon className="size-6" />
+          </button>
+          <button
+            type="button"
             aria-label="Grid view"
-            className="flex size-10 items-center justify-center rounded-lg border border-primary-4"
+            aria-pressed={layout === 'grid'}
+            onClick={() => {
+              onLayoutChange('grid')
+            }}
+            className={`flex size-10 items-center justify-center rounded-lg ${
+              layout === 'grid' ? 'border border-primary-4 text-primary-4' : 'text-neutral-1'
+            }`}
           >
-            <GridIcon className="size-6 text-primary-4" />
-          </span>
+            <GridIcon className="size-6" />
+          </button>
         </div>
         <button
           type="button"

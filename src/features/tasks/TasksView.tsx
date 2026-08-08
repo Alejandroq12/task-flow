@@ -1,6 +1,12 @@
+import { useQuery } from '@tanstack/react-query'
+import { graphqlClient } from '@/lib/graphql-client'
+import { TasksDocument } from '@/features/tasks/queries'
 import { TaskBoard } from '@/features/tasks/TaskBoard'
+import { TaskList } from '@/features/tasks/TaskList'
+import { QueryErrorAlert } from '@/components/ui/QueryErrorAlert'
 import { groupTasksByStatus } from '@/features/tasks/task-display'
-import { useTasks } from '@/features/tasks/useTasks'
+import type { BoardLayout } from '@/components/layout/view-layout'
+import type { FilterTaskInput } from '@/graphql/generated/graphql'
 
 function TaskBoardSkeleton() {
   return (
@@ -21,34 +27,51 @@ function TaskBoardSkeleton() {
   )
 }
 
-export function TasksView() {
-  const { data, isPending, isError, refetch } = useTasks()
+interface TasksViewProps {
+  input?: FilterTaskInput
+  layout?: BoardLayout
+  filtered?: boolean
+}
+
+export function TasksView({ input = {}, layout = 'grid', filtered = false }: TasksViewProps) {
+  const { data, isPending, isError, refetch } = useQuery({
+    queryKey: ['tasks', input],
+    queryFn: () => graphqlClient.request(TasksDocument, { input }),
+  })
 
   if (isPending) return <TaskBoardSkeleton />
 
   if (isError) {
     return (
-      <div
-        role="alert"
-        className="flex flex-col items-start gap-4 rounded-lg bg-primary-4/10 p-4 text-body-m text-primary-4"
-      >
-        <p>Something went wrong while loading tasks.</p>
-        <button
-          type="button"
-          onClick={() => {
-            void refetch()
-          }}
-          className="rounded bg-primary-4 px-4 py-1 font-semibold text-neutral-1"
-        >
-          Try again
-        </button>
+      <QueryErrorAlert
+        message="Something went wrong while loading tasks."
+        onRetry={() => {
+          void refetch()
+        }}
+      />
+    )
+  }
+
+  const tasks =
+    input.ownerId !== undefined && input.ownerId !== null
+      ? data.tasks.filter((task) => task.creator.id === input.ownerId)
+      : data.tasks
+
+  if (tasks.length === 0) {
+    return (
+      <div className="flex flex-col items-start gap-2 p-4">
+        <p className="text-body-l font-semibold text-neutral-1">
+          {filtered ? 'No tasks match your filters' : 'No tasks found'}
+        </p>
+        <p className="text-body-m text-neutral-2">
+          {filtered
+            ? 'Try removing or changing some filters to see more results.'
+            : 'Create a task with the + button to get started.'}
+        </p>
       </div>
     )
   }
 
-  if (data.tasks.length === 0) {
-    return <p className="p-4 text-body-m text-neutral-2">No tasks found.</p>
-  }
-
-  return <TaskBoard columns={groupTasksByStatus(data.tasks)} />
+  const columns = groupTasksByStatus(tasks)
+  return layout === 'grid' ? <TaskBoard columns={columns} /> : <TaskList columns={columns} />
 }
