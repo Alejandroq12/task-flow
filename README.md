@@ -31,9 +31,7 @@ cp .env.example .env.local   # then fill in the API URL and access token from th
 npm run dev
 ```
 
-The app runs at `http://localhost:5173`.
-
-That's the whole setup. You do not need `npm run codegen` after cloning: the generated GraphQL code is committed (see Additional Notes), so the app typechecks, builds, and runs on what's already in the repo. Run codegen only if you change a query or mutation, and note it needs both environment variables.
+The app runs at `http://localhost:5173`. That's the whole setup.
 
 ### Environment variables
 
@@ -66,6 +64,8 @@ npm run format:check  # verify formatting (used in CI)
 npm run codegen       # generate typed GraphQL operations from the API schema
 npm run preview       # preview production build locally
 ```
+
+> **Note on `npm run codegen`:** you don't need it after cloning. The generated GraphQL code is committed (`src/graphql/generated/`) so the app typechecks, builds, and runs on what's already in the repo. Run it only when you change a query or mutation, or when the API schema itself changes, and it needs both environment variables set.
 
 ## Project Structure
 
@@ -127,7 +127,7 @@ I'd also add optimistic updates: today every mutation invalidates and refetches,
 
 ## Additional Notes
 
-- **Generated GraphQL code is committed on purpose.** `src/graphql/generated/` (the output of `npm run codegen`) is checked into git so CI can typecheck and build without holding the API token. Regenerate after changing any query or mutation; never edit it by hand.
+- **Generated GraphQL code is committed on purpose.** `src/graphql/generated/` (the output of `npm run codegen`) is checked into git so CI can typecheck and build without holding the API token. Regenerate after changing any query or mutation, or when the API schema changes; never edit it by hand.
 - **Quality gates are CI-enforced, not hook-enforced.** The repo deliberately has no git hooks (husky/lint-staged). CI runs format check, lint, typecheck, tests, and build on every PR, and the same scripts run locally on demand. Hooks can be added later if commit-time enforcement proves necessary.
 - **The settings Position row says "Not provided by the API."** The requirement lists Position among the user fields, but the User type has no such field (introspection: fullName, email, type, avatar, createdAt, updatedAt). The row still renders so the requirement's shape is visible, with an honest value instead of an invented one.
 - **Filter state lives in the URL.** Search and filters are `?q=…&status=…` search params, not component state, so filtered views are shareable, bookmarkable, and survive reloads. Search-param changes don't remount the page (the error boundary keys on pathname only). Three observed API behaviors are documented here instead of papered over. Name matching is a **case-sensitive** substring (verified: `icket` matches `Ticket5`, `ticket` does not). `dueDate` filters by **exact timestamp** equality; this app writes all due dates at noon UTC, so day-level filtering works for tasks it created. `ownerId` is accepted but **ignored by the server** (a nonexistent id returns the full task list); the param is still sent as required, and the owner filter also applies client-side against the task's `creator.id`, so the control does what it says.
