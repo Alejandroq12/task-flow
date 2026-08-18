@@ -103,15 +103,17 @@ export function TaskForm({
   const positionNumber = Number(position)
   const positionValid =
     !showPosition || (position !== '' && Number.isFinite(positionNumber) && positionNumber > 0)
-  const canSubmit = name.trim().length > 0 && estimate !== null && dueDate !== '' && positionValid
-  const validationMessage =
-    estimate !== null && dueDate !== '' && !positionValid
-      ? 'Position must be a number greater than zero.'
-      : 'An estimate and a due date are required.'
+  const missing = [
+    name.trim().length === 0 ? 'A task title is required.' : null,
+    estimate === null ? 'An estimate is required.' : null,
+    dueDate === '' ? 'A due date is required.' : null,
+    positionValid ? null : 'Position must be a number greater than zero.',
+  ].filter((message): message is string => message !== null)
+  const canSubmit = missing.length === 0
 
   const submit = () => {
     if (isPending) return
-    if (!canSubmit) {
+    if (!canSubmit || estimate === null) {
       setShowValidation(true)
       return
     }
@@ -169,7 +171,7 @@ export function TaskForm({
           </button>
           <button
             type="button"
-            disabled={name.trim().length === 0 || isPending}
+            disabled={isPending}
             onClick={submit}
             className="rounded-lg p-2 text-body-m text-neutral-1 disabled:text-neutral-2"
           >
@@ -424,7 +426,15 @@ export function TaskForm({
             role="alert"
             className="w-full rounded bg-primary-4/10 px-4 py-2 text-body-m text-primary-4"
           >
-            {canSubmit ? errorMessage : validationMessage}
+            {canSubmit ? (
+              errorMessage
+            ) : (
+              <ul className="space-y-1">
+                {missing.map((message) => (
+                  <li key={message}>{message}</li>
+                ))}
+              </ul>
+            )}
           </div>
         )}
         <div className="hidden items-center gap-6 self-end lg:flex">
@@ -437,7 +447,7 @@ export function TaskForm({
           </button>
           <button
             type="button"
-            disabled={!canSubmit || isPending}
+            disabled={isPending}
             onClick={submit}
             className="rounded-lg bg-primary-4 p-2 text-body-m text-neutral-1 disabled:bg-primary-2"
           >
