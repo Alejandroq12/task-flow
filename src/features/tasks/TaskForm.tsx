@@ -102,12 +102,12 @@ export function TaskForm({
   const statusTitle = STATUS_COLUMNS.find((column) => column.status === status)?.title ?? status
   const positionNumber = Number(position)
   const positionValid =
-    !showPosition || (position !== '' && Number.isFinite(positionNumber) && positionNumber > 0)
+    !showPosition || (position !== '' && Number.isFinite(positionNumber) && positionNumber >= 0)
   const missing = [
     name.trim().length === 0 ? 'A task title is required.' : null,
     estimate === null ? 'An estimate is required.' : null,
     dueDate === '' ? 'A due date is required.' : null,
-    positionValid ? null : 'Position must be a number greater than zero.',
+    positionValid ? null : 'Position must be zero or greater.',
   ].filter((message): message is string => message !== null)
   const canSubmit = missing.length === 0
 
@@ -370,7 +370,7 @@ export function TaskForm({
               Position
               <input
                 type="number"
-                min="1"
+                min="0"
                 step="any"
                 aria-label="Position"
                 value={position}
